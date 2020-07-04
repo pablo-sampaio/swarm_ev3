@@ -1,0 +1,57 @@
+{
+    "configurations": [
+        {
+            "name": "!!! WARNING !!! AUTO-GENERATED FILE, PLEASE DO NOT MODIFY IT AND USE https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags"
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "/home/pablo/Code/swarm_ev3/swarm_ev3/RFID_Arduino_Driver/Arduino_RFID_firmware/include",
+                "/home/pablo/Code/swarm_ev3/swarm_ev3/RFID_Arduino_Driver/Arduino_RFID_firmware/src",
+                "/home/pablo/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/SPI/src",
+                "/home/pablo/.platformio/packages/framework-arduinoavr/cores/arduino",
+                "/home/pablo/.platformio/packages/framework-arduinoavr/variants/standard",
+                "/home/pablo/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/EEPROM/src",
+                "/home/pablo/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/HID/src",
+                "/home/pablo/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/SoftwareSerial/src",
+                "/home/pablo/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/Wire/src",
+                "/home/pablo/.platformio/packages/tool-unity",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "/home/pablo/Code/swarm_ev3/swarm_ev3/RFID_Arduino_Driver/Arduino_RFID_firmware/include",
+                    "/home/pablo/Code/swarm_ev3/swarm_ev3/RFID_Arduino_Driver/Arduino_RFID_firmware/src",
+                    "/home/pablo/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/SPI/src",
+                    "/home/pablo/.platformio/packages/framework-arduinoavr/cores/arduino",
+                    "/home/pablo/.platformio/packages/framework-arduinoavr/variants/standard",
+                    "/home/pablo/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/EEPROM/src",
+                    "/home/pablo/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/HID/src",
+                    "/home/pablo/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/SoftwareSerial/src",
+                    "/home/pablo/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/Wire/src",
+                    "/home/pablo/.platformio/packages/tool-unity",
+                    ""
+                ]
+            },
+            "defines": [
+                "PLATFORMIO=40304",
+                "ARDUINO_AVR_UNO",
+                "F_CPU=16000000L",
+                "ARDUINO_ARCH_AVR",
+                "ARDUINO=10805",
+                "__AVR_ATmega328P__",
+                ""
+            ],
+            "intelliSenseMode": "clang-x64",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "compilerPath": "/home/pablo/.platformio/packages/toolchain-atmelavr/bin/avr-gcc",
+            "compilerArgs": [
+                "-mmcu=atmega328p",
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}

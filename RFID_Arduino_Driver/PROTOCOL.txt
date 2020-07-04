@@ -1,0 +1,31 @@
+
+
+Para ligar a antena:
+	(s)     [atenção: em geral, o fecha-parentese é opcional nos comandos enviados para o RFID]
+	resposta: (s <msg>)
+
+Para desligar a antena:
+	(x)
+	resposta: (x <msg>)
+
+Para testar o RFID (com a antena desligada):
+	(t)
+	resposta: (t <msg>)
+
+Para ler bloco de dados iniciado por dado número magico:
+	(r <bloco> <num-magico>)
+	resposta: (r <msg>)
+
+Para escrever em bloco de dados:
+	(w <bloco> <num-magico> <num-bytes> <bytes-in-hex>)
+	resposta: (w <msg>)
+
+Para indicar uma tag presente (enviada uma vez enquanto estiver ao alcance):
+	(tag <8-hex-digits>)
+
+Para indicar uma tag desconectada (enviada uma vez):
+	(tag undetected)
+
+Para forçar a responder uma das mensagens de tag acima (conforme o caso):
+	(d)
+

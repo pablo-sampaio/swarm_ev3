@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../Common"
+		},
+		{
+			"path": "../RL_Simulated"
+		}
+	],
+	"settings": {
+		"debug.openDebug": "neverOpen"
+	}
+}
