@@ -1,12 +1,12 @@
 
-TO RUN AFTER COMMON CHANGES ONLY IN THE EV3_PROJ (except 1st time)
-------------------------------------------------
+TO RUN AFTER CHANGES TO PROJECT RL_in_EV3 (except for 1st time)
+---------------------------------------------------------------
 1) Connect to the ev3dev
 2) Just Ctrl+F5 (on the desired file in EV3_PROJ)
 
 
-TO RUN FOR THE 1st TIME AND EVERYTIME YOU CHANGE OTHER PROJECTS
----------------------------------------------------------------
+TO RUN FOR THE 1st TIME AND EVERYTIME YOU CHANGE *OTHER* PROJECTS
+-----------------------------------------------------------------
 1) Connect to the ev3dev
 2) On the "ev3dev Device Browser", click on "Dowload workspace"
 3) Connect to SSH shell, the cd ~ (just in case) 
