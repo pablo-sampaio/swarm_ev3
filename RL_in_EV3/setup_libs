@@ -1,7 +1,6 @@
 
 #!/bin/bash
-mv -u ~/Common/BotHardware ~/Common/PID ~/RL_in_EV3/
-mv -u ~/RL_Simulated/RL ~/RL_in_EV3/
-#ln -s ~/Common/BotHardware ~/RL_in_EV3/BotHardware
-#ln -s ~/Common/PID ~/RL_in_EV3/PID
-#ln -s ~/RL_Simulated/RL ~/RL_in_EV3/RL
+# creates soft links
+ln -sTfv ~/Common/BotHardware ~/RL_in_EV3/BotHardware
+ln -sTfv ~/Common/PID ~/RL_in_EV3/PID
+ln -sTfv ~/Common/RL ~/RL_in_EV3/RL

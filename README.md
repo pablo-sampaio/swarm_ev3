@@ -6,13 +6,11 @@ Most algorithms are designed for multiple agents, to run with pottentially thous
 
 ## Technical Details
 
-Languages: Python (most of the code) and C (just the Arduino driver).
-
-The EV3 run the [ev3dev](http://www.ev3dev.org/) operating system, version *jessie*.
-
-Some projects require an **Arduino** interfacing an RFID MFRC522, with the Arduino connected to the EV3 through the USB port. The C code for the Arduino is provided. 
-
-Most of the projects should open in *VS Code* IDE. An older PyCharm project file is also present (but it is not actively used).
+- **Languages**: *Python* (most of the code) and *C* (just the Arduino driver).
+- **EV3 Kit**: The code works with 45544 (mounted with the "Educator" base) or 31313 (mounted with the "Enterprise" base).
+- **Operating system** (EV3): [ev3dev](http://www.ev3dev.org/), version *jessie*.
+- **Other hardware pieces**: Some projects require an **Arduino** interfacing an RFID MFRC522, with the Arduino connected to the EV3 through the USB port. The C code for the Arduino is provided. 
+- **IDE**: All projects should open in *VS Code*. (Older PyCharm project settings may also be present, but it is not actively used).
 
 ## Projects
 
@@ -29,13 +27,18 @@ Arduino. The code defines a communication protocol through the serial port that 
 
 **RL_Simulated** - A project that implements some Reinforcement Learning (RL) algorithms (like *DynaQ+*) in a simulated way.
 
-*RL_in_EV3* - A project to run/test RL algorithms in the EV3 robots.
+**RL_in_EV3** - A project to run/test RL algorithms in the EV3 robots.
 
 
 ## Other Informations
 
 These projects were developed by professor Pablo A. Sampaio, with undergrad students. Some of the algorithms were published in conferences.
 
+**TODO**: add references here
+
+--
+
 *Prof. Pablo A. Sampaio*
+
 *Universidade Federal Rural de Pernambuco*
 

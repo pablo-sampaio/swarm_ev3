@@ -1,5 +1,5 @@
 
-import numpy as np
+#import numpy as np  # TODO: change, to make it independent of np
 import random as rand
 
 from enum import Enum, unique
@@ -163,7 +163,7 @@ class Ev3GridEnv:
         print("Place the robot in the start position (use always the same!)")
         while not self.robot.brickButton.any():
             pass
-        assert (self.robot.readColor() == 3), "Didn't sense green color in start state!"  # GREEN
+        #assert (self.robot.readColor() == 3), "Didn't sense green color in start state!"  # GREEN
         self.robot.speaker.beep()
         self.robot.resetOrientation()
 
