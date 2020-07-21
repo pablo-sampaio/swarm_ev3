@@ -39,3 +39,5 @@ def play_episodes(env, agent, episodes=1, render=False, verbose=True):
         print(", steps:", total_steps)
 
     return np.mean(perfs), total_steps
+
+print("Teste")

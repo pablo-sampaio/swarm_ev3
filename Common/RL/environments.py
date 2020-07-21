@@ -1,6 +1,7 @@
 
 #import numpy as np  # TODO: change, to make it independent of np
 import random as rand
+import time
 
 from enum import Enum, unique
 from itertools import product
@@ -22,8 +23,9 @@ class Action(Enum):
 
 class SimulatedEnv:
     def __init__(self, count_visits=False, use_real_state=False, reward_option='goal'):
-        # 0 is corridor; 1 is wall; 2 is goal (r=1); 3 is start position; 
-        # 4 is a hole that terminates the episode (r=-1); 5 is a cliff that returns to initial position (-1)
+        # 0 is corridor; 1 is wall; 2 is goal (r=1, if reward is goal); 
+        # 3 is start position; 
+        # 4 is a hole that terminates the episode (r=-1, if reward is goal); 
         self.map = [ 
             [ 0, 0, 0, 0, 0, 0, 2],
             [ 0, 0, 0, 0, 0, 0, 0],
@@ -40,6 +42,14 @@ class SimulatedEnv:
         self.use_real_state = use_real_state
         assert reward_option in ['goal', 'step_cost']
         self.reward_option = reward_option
+        if reward_option == 'goal':
+            self.STEP_REWARD = 0.0
+            self.GOAL_REWARD = 1.0
+            self.HOLE_REWARD = -1.0
+        else:
+            self.STEP_REWARD = -1.0
+            self.GOAL_REWARD = 0.0
+            self.HOLE_REWARD = -1000.0
 
         if count_visits:
             self.visits = np.zeros((len(self.map), len(self.map[0])), dtype=int)
@@ -48,11 +58,24 @@ class SimulatedEnv:
         self.count_visits = count_visits
         
         self.actionset = list(Action)
+        self.actionset_no_front = list(Action)
+        self.actionset_no_front.remove(Action.FRONT)
+
         self.step = self.apply_action # another name for the function (similar to the name used in gym)
 
     def all_actions(self):
         return self.actionset
     
+    def curr_actions(self):
+        assert self.state is not None, "Environment must be reset"
+        state = self.state
+        if 0 <= state[0] < len(self.map) \
+                and 0 <= state[1] < len(self.map[0]) \
+                and self.map[state[0]][state[1]] != 1:
+            return self.actionset
+        else:
+            return self.actionset_no_front
+
     def states(self):
         positions = product(range(len(self.map)), range(len(self.map[0])))
         return product(positions, list(Direction))
@@ -110,31 +133,48 @@ class SimulatedEnv:
             # prohibited moves: don't change self.state and self.observation
             new_state = self.state
         
-        arrived = (self.map[new_state[0]][new_state[1]] == 2)
-        reward = 0.0 if self.reward_option=='goal' else -1.0
+        arrived = False
+        if self.map[new_state[0]][new_state[1]] == 2: # goal
+            arrived = True
+            reward = self.GOAL_REWARD
+        elif self.map[new_state[0]][new_state[1]] == 4:  # hole
+            arrived = True
+            reward = self.HOLE_REWARD
+        else:
+            reward = self.STEP_REWARD
+        
         if arrived:
-            reward = 1.0 if self.reward_option=='goal' else 50.0
-            self.state = None  #but don't change the observation (that will be returned)
+            self.state = None  # but don't change the observation (that will be returned)
 
         return self.observation, reward, arrived
 
 
-# o robot deve ser um das classes que extendem AbstractRobotHardware 
-# do projeto Ev3_Swarm
 
-_ORIENT_ERROR_MARGIN = 10.0  # in degrees
+_ORIENT_ERROR_MARGIN = 15.0  # in degrees
 
 class Ev3GridEnv:
+    '''
+    An environment that interfaces to a real EV3 robot that physically executes the actions.
+    The 'robot' parameter should be one of the classes from BotHarware module.
+    '''
     def __init__(self, robot, count_visits=False, reward_option='goal'):
         self.robot = robot
-        # here, the "state" is the relative view of the agent
-        # column and row are always assumed to be 0 in the start of an episode
-        # negative columns and rows may appear
+        # Here, the "state" is the relative view of the agent
+        # Column and row are always assumed to be 0 in the start of an episode
+        # and may become negative
         self.initial_state = (0, 0, 0)  # row, column, orientation angle
         self.state = None
         assert reward_option in ['goal', 'step_cost']
         self.reward_option = reward_option
-        
+        if reward_option == 'goal':
+            self.STEP_REWARD = 0.0
+            self.GOAL_REWARD = 1.0
+            self.HOLE_REWARD = -1.0     # not used yet
+        else:
+            self.STEP_REWARD = -1.0
+            self.GOAL_REWARD = 0.0
+            self.HOLE_REWARD = -1000.0  # not used yet
+
         if count_visits:
             self.visits = {}
         else:
@@ -160,17 +200,18 @@ class Ev3GridEnv:
         raise Excetion("In this environment, the state space is unknown.")
 
     def reset(self):
-        print("Place the robot in the start position (use always the same!)")
-        while not self.robot.brickButton.any():
+        print("Place the robot in the start position (use always the same!).")
+        print("The robot starts when you press a button or when sensing green.")
+        while not (self.robot.brickButton.any() or self.robot.readColor() == 3):
             pass
-        #assert (self.robot.readColor() == 3), "Didn't sense green color in start state!"  # GREEN
         self.robot.speaker.beep()
+        time.sleep(3)
         self.robot.resetOrientation()
 
         self.state = self.initial_state 
         if self.visits is not None:
-            count = self.visits.get((self.state[0], self.state[1]), 0)
-            self.visits[self.state[0], self.state[1]] = count + 1
+            count = self.visits.get(self.state[0:2]), 0)
+            self.visits[self.state[0:2]] = count + 1
         return self.state
 
     def _internal_apply_action(self, obs, action):
@@ -190,22 +231,13 @@ class Ev3GridEnv:
         elif action == Action.TURN_CW:
             orientation = (orientation+90) % 360
             self.robot.turnToOrientation(self.robot.getOrientation() + 90)
-            # se der problema, usar:
-            # rounded_orientation = 90.0 * ((robot.orientation + _ORIENT_ERROR_MARGIN) // 90)
-            # self.robot.turnToOrientation(rounded_orientation + 90)
-            # ideia antiga:
-            # delta = 360 if orientation == 0 else orientation
-            # self.robot.turnToOrientation(360.0*((self.robot.orientation//360 + _ORIENTATION_MARGIN)) + delta)
-            # if 0 (era 270) : 360 * orientation // 360 + 360
-            # if 90 (era 0) : 360 * orientation // 360 + 90
-            # if 180 (era 90) : 360 * orientation // 360 + 180
-            # if 270 (era 180) : 360 * orientation // 360 + 270
+            #rounded_orientation = 90.0 * ((self.robot.getOrientation() + _ORIENT_ERROR_MARGIN) // 90)  # resultados + / -
+            #self.robot.turnToOrientation(rounded_orientation + 90)
         elif action == Action.TURN_COUNTER_CW:
             orientation = (orientation-90) % 360
             self.robot.turnToOrientation(self.robot.getOrientation() - 90)
-            # se der problema, usar:
-            # rounded_orientation = 90.0 * ((robot.orientation + _ORIENT_ERROR_MARGIN) // 90)
-            # self.robot.turnToOrientation(rounded_orientation - 90)
+            #rounded_orientation = 90.0 * ((self.robot.getOrientation() + _ORIENT_ERROR_MARGIN) // 90)
+            #self.robot.turnToOrientation(rounded_orientation - 90)
         else:
             raise Exception("Invalid action")
         return (row, col, orientation)
@@ -230,18 +262,19 @@ class Ev3GridEnv:
             new_state = self._internal_apply_action(self.state, action)
             self.state = new_state
             if self.visits is not None and action == Action.FRONT:
-                count = self.visits.get((self.state[0], self.state[1]), 0)
-                self.visits[self.state[0], self.state[1]] = count + 1
+                count = self.visits.get(self.state[0:2], 0)
+                self.visits[ self.state[0:2] ] = count + 1
         else:
             # prohibited moves: 
-            # don't change self.state but set it to new_state to return it
+            # don't change self.state but store it in new_state to return it
+            print("Prohibited action")
             new_state = self.state
         
         arrived = self._check_goal()
-        reward = 0.0 if self.reward_option=='goal' else -1.0
+        reward = self.STEP_REWARD
         if arrived:
             self.robot.speaker.beep()
-            reward = 1.0 if self.reward_option=='goal' else 0.0  # TODO: rever
+            reward = self.GOAL_REWARD
             self.state = None 
 
         return new_state, reward, arrived
@@ -260,3 +293,39 @@ class Ev3GridEnv:
         else:
             return None
 
+class _DummyBot:
+    ''' Class created only to test the Ev3GridEnv
+    '''
+    def __init__(self):
+        class _Button:
+            def __init__(self, parent):
+                self.parent = parent
+            def any(self):
+                self.parent.count = 0
+                return True
+        class _Sound:
+            def beep(self):
+                print("Beeep!")
+                pass
+        self.brickButton = _Button(self)
+        self.speaker = _Sound()
+        self.count = 0
+        self.orientation = 0.0
+
+    def readColor(self):
+        return 5 if self.count >= 20 else 3 
+
+    def runMotorsDistance(self, distance, velocity=200, wait=True):
+        self.count += 1
+
+    def getOrientation(self):
+        return self.orientation
+
+    def resetOrientation(self):
+        self.orientation = 0.0
+
+    def turnToOrientation(self, abs_degrees, velocity=50):
+        self.orientation = abs_degrees
+
+    def getDistanceAhead(self):
+        return 25.0

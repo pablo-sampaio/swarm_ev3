@@ -102,7 +102,6 @@ def TEST4():
 
 def TEST5_BUG():
     # this a bug in an older version of reset orientation
-    # TODO: expand definitions here
     robot.runMotorsTimed(3, 150, 150)
     robot.turn(190)
     sleep(1)

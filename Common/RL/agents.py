@@ -7,6 +7,16 @@ from itertools import product
 
 from RL.environments import Action, Direction
 
+try: 
+    rand.choices
+except AttributeError:
+    def _choices(options, k):
+        l = []
+        for _ in range(k):
+            l.append(rand.choice(options))
+        return l
+    rand.choices = _choices
+
 
 class TabularQ(object):
     def __init__(self, actionset):
@@ -88,7 +98,7 @@ class DynaQPlusAgent(object):
         self.epi_finished = 0  # number of episodes finished
         return self.state
 
-    # it is optional to call this method
+    # it is optional to call this method to reset the environment
     # useful only if you want to know each start state
     def reset_env(self):
         assert self.state == None, "Episode not finished"
@@ -100,10 +110,11 @@ class DynaQPlusAgent(object):
             self.state = self.env.reset()
 
         # select and apply action
+        actions_in_state = self.env.curr_actions()  # self.all_actions()
         if rand.random() < self.epsilon:
-            action = rand.choice(self.all_actions)
+            action = rand.choice(actions_in_state)
         else:
-            action, _ = self.q.argmax(self.state)
+            action, _ = self.q.argmax(self.state, actions_in_state)
 
         new_state, reward, terminal = self.env.apply_action(action)
         self.train_step += 1
@@ -119,7 +130,7 @@ class DynaQPlusAgent(object):
         self.q.set(self.state, action, q_state_action)
         
         # update model
-        self.update_model(self.state, action, reward, new_state, terminal)
+        self.update_model(self.state, action, reward, new_state, terminal) #TODO: usar actions in state
 
         # update Q by planning (indirect RL)
         self.planning(self.train_step)

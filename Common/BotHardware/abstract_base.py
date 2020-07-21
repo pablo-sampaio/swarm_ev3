@@ -34,6 +34,7 @@ class AbstractHardwareBase:
         sleep(0.1)
         color = self.lightRight.color
         self.lightRight.mode = 'COL-REFLECT'
+        return color
 
     def runMotors(self, leftVelocity, rightVelocity):
         self.leftMotor.run_forever(speed_sp=leftVelocity)

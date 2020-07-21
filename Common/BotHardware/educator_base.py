@@ -9,7 +9,7 @@ class _EducatorBase(AbstractHardwareBase):
         customization (main brick inverted, gyro in upside down position, using non-standard ports).
     '''
     def __init__(self):
-        AbstractHardwareBase.__init__(self, 'outD', 'outA', 'in2', 'in3', (7.0 * 360 / 122.5))
+        AbstractHardwareBase.__init__(self, 'outC', 'outA', 'in2', 'in3', (7.0 * 360 / 122.5))
 
         self.gyro = GyroSensor()
         assert self.gyro.connected, "Connect a gyro sensor to any sensor port"
@@ -35,7 +35,8 @@ class _EducatorBase(AbstractHardwareBase):
         return self.distSensor.value() / 10.0  #in cm
 
     def getOrientation(self):
-        return -self.gyro.angle
+        #return -self.gyro.angle  #attention: use this if sensor is placed upside down 
+        return self.gyro.angle
 
     def resetOrientation(self):
         # changing mode resets the angle (cannot set to 0 directly)

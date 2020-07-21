@@ -8,8 +8,12 @@ from ECEP import *
 
 robot = EnterpriseBot()
 
-# TODO: definir direto na classe
-robot.RFID_TO_AXIS_DISTANCE = 4.0  #old: 5.7  # measure considering the axis as 0, and considering positive if should move forward to reach RFID reader
+# This distance varies according to how the RFID antenna is assembled, so we left it
+# here (and not inside the class definition) to remember to ajust accordingly.
+# Distance measured considering the RFID antenna as position 0, being positive if the
+# antenna comes "before" the axis (i.e. when the axis is over an RFID tag, the robot 
+# must move forward to let the antenna exactly above the tag).
+robot.RFID_TO_AXIS_DISTANCE = 4.0  
 
 
 #######################
