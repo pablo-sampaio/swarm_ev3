@@ -9,6 +9,8 @@ import time
 import random as rand
 import sys
 
+# works when running from Ctrl+F5 in VS Code, or running from
+# command line, but doesn't work when run from the brick interface
 OUTPUT_TO_FILE = True
 if OUTPUT_TO_FILE:
     sys.stdout = open("output.txt", "w")
@@ -19,11 +21,13 @@ robot = EducatorBase()
 env = Ev3GridEnv(robot=robot, count_visits=True)
 agent1 = DynaQPlusAgent(planning_steps=10, kappa=0.0)
 
-rand.seed(21) # com essa e com a antiga movimentacao (mais sofisticada): 
-#agent1.full_train(env, max_episodes=1)
+rand.seed(21)
+NUM_EPISODES = 1
 
+robot.speaker.beep()
 agent1.start_train(env)
-for epi in range(4):
+
+for epi in range(NUM_EPISODES):
     terminal = False
     print("Episode #", epi)
     

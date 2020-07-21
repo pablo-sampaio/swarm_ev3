@@ -86,14 +86,18 @@ class DynaQPlusAgent(object):
         self.env = env
         self.all_actions = env.all_actions()
         self.q = TabularQ(self.all_actions)
-        self.model = dict({})  # keys are pairs (s,a)
+        self.model = dict({})  # keys are pairs (state, action)
+        
+        self.state = self.env.reset()
+        self.train_step = 0
 
         if self.model_option == 'all':
             for s_a in product(env.states(), list(Action)):
-                self.model[s_a] = (0.0, s_a[0], False, 0)
+                self.model[s_a] = (0.0, s_a[0], False, self.train_step)
+        elif self.model_option == 'state+next_state+actions':
+            for a in self.env.curr_actions():
+                self.model[self.state, a] = (1.0, self.state, False, self.train_step) # OTIMISTA !!
 
-        self.state = None
-        self.train_step = 0
         self.epi_step = 0
         self.epi_finished = 0  # number of episodes finished
         return self.state
@@ -153,20 +157,21 @@ class DynaQPlusAgent(object):
             if (state, action) not in self.model: # se nao tiver uma acao, nao tem nenhuma
                 for a in self.all_actions:
                     if a != action:
-                        self.model[(state,a)] = (0, state, False, self.train_step)
+                        self.model[(state,a)] = (0.0, state, False, self.train_step)
             self.model[(state,action)] = (reward, new_state, terminal, self.train_step)
         
-        elif self.model_option == 'state+next_state+actions':
-            if (state, action) not in self.model: # se nao tiver uma acao, nao tem nenhuma
-                for a in self.all_actions:
-                    if a != action:
-                        self.model[(state,a)] = (0, state, False, self.train_step)
+        elif self.model_option == 'state+next_state+actions':  # OTIMISTA
+            # desnecessario: passou para a inicializacao
+            #if (state, action) not in self.model: # se nao tiver uma acao, nao tem nenhuma
+            #    for a in self.all_actions:
+            #        if a != action:
+            #            self.model[(state,a)] = (0, state, False, self.train_step)
             self.model[(state,action)] = (reward, new_state, terminal, self.train_step)
             if not terminal:
                 for a in self.all_actions:
                     if (new_state, a) in self.model: # se tiver uma acao, tem todas
                         break
-                    self.model[(new_state,a)] = (0, new_state, False, self.train_step)
+                    self.model[(new_state,a)] = (1.0, new_state, False, self.train_step) # OTIMISTA !
         
         else:
             raise Exception("Invalid option for model update: " + self.model_option)

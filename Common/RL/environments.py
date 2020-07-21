@@ -150,7 +150,8 @@ class SimulatedEnv:
 
 
 
-_ORIENT_ERROR_MARGIN = 15.0  # in degrees
+# Not being used anymore (see comments in _internal_apply_action())
+#_ORIENT_ERROR_MARGIN = 15.0  # in degrees
 
 class Ev3GridEnv:
     '''
@@ -173,7 +174,7 @@ class Ev3GridEnv:
         else:
             self.STEP_REWARD = -1.0
             self.GOAL_REWARD = 0.0
-            self.HOLE_REWARD = -1000.0  # not used yet
+            self.HOLE_REWARD = -1000000.0  # not used yet
 
         if count_visits:
             self.visits = {}
@@ -201,16 +202,16 @@ class Ev3GridEnv:
 
     def reset(self):
         print("Place the robot in the start position (use always the same!).")
-        print("The robot starts when you press a button or when sensing green.")
-        while not (self.robot.brickButton.any() or self.robot.readColor() == 3):
+        print("Press ANY button when ready.")
+        while not self.robot.brickButton.any():
             pass
         self.robot.speaker.beep()
-        time.sleep(3)
+        time.sleep(2)
+        
         self.robot.resetOrientation()
-
         self.state = self.initial_state 
         if self.visits is not None:
-            count = self.visits.get(self.state[0:2]), 0)
+            count = self.visits.get(self.state[0:2], 0)
             self.visits[self.state[0:2]] = count + 1
         return self.state
 
@@ -227,17 +228,16 @@ class Ev3GridEnv:
                 col -= 1
             else:
                 raise Exception("Invalid direction")
-            self.robot.runMotorsDistance(21.5, 150) # anda 21.5 cm
+            self.robot.runMotorsDistance(21.8, 150) # anda 21.8 cm
         elif action == Action.TURN_CW:
             orientation = (orientation+90) % 360
             self.robot.turnToOrientation(self.robot.getOrientation() + 90)
-            #rounded_orientation = 90.0 * ((self.robot.getOrientation() + _ORIENT_ERROR_MARGIN) // 90)  # resultados + / -
-            #self.robot.turnToOrientation(rounded_orientation + 90)
+            # below, it is shown a bad alternative to the line above (similar calculation was used for CW):
+            # rounded_orientation = 90.0 * ((self.robot.getOrientation() + _ORIENT_ERROR_MARGIN) // 90)
+            # self.robot.turnToOrientation(rounded_orientation + 90)
         elif action == Action.TURN_COUNTER_CW:
             orientation = (orientation-90) % 360
             self.robot.turnToOrientation(self.robot.getOrientation() - 90)
-            #rounded_orientation = 90.0 * ((self.robot.getOrientation() + _ORIENT_ERROR_MARGIN) // 90)
-            #self.robot.turnToOrientation(rounded_orientation - 90)
         else:
             raise Exception("Invalid action")
         return (row, col, orientation)
