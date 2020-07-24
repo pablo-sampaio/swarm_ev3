@@ -14,13 +14,13 @@ Use this on the first time you run the project.
 1. On the "ev3dev Device Browser", click on "Dowload workspace"
 1. On the device, right click and choose "Open SSH Terminal"
 1. Run 
-   chmod +x ~/RL_in_EV3/setup_paths
+   - chmod +x ~/RL_in_EV3/setup_paths
 1. Run 
-   ~/RL_in_EV3/setup_libs
+   - ~/RL_in_EV3/setup_libs
 1. Run the file (see below)
 
-Attention: if you change the directories in "Common" folder, you will have to adjust the 
-setup script
+Attention: if you change the names of directories in "Common" folder or if you create new, you will have to adjust the setup script.
+
 
 ## TO RUN A FILE 
 Use this, if you haven't changed since last donwload to EV3 or 

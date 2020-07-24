@@ -21,8 +21,8 @@ robot = EducatorBase()
 env = Ev3GridEnv(robot=robot, count_visits=True)
 agent1 = DynaQPlusAgent(planning_steps=10, kappa=0.0)
 
-rand.seed(21)
-NUM_EPISODES = 1
+rand.seed(23)
+NUM_EPISODES = 4
 
 robot.speaker.beep()
 agent1.start_train(env)

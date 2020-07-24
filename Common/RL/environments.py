@@ -19,10 +19,18 @@ class Action(Enum):
     FRONT = 0
     TURN_CW = 1
     TURN_COUNTER_CW = 2
+    
+    def reverse(action):
+        if action == Action.TURN_COUNTER_CW:
+            return Action.TURN_CW
+        if action == Action.TURN_CW:
+            return Action.TURN_COUNTER_CW
+        else:
+            return None
 
 
 class SimulatedEnv:
-    def __init__(self, count_visits=False, use_real_state=False, reward_option='goal'):
+    def __init__(self, count_visits=False, use_real_state=False, reward_option='goal', allow_all_actions=True):
         # 0 is corridor; 1 is wall; 2 is goal (r=1, if reward is goal); 
         # 3 is start position; 
         # 4 is a hole that terminates the episode (r=-1, if reward is goal); 
@@ -33,13 +41,14 @@ class SimulatedEnv:
             [ 0, 0, 0, 0, 0, 0, 0],
             [ 0, 0, 0, 3, 0, 0, 0],
         ]
-        # "state" reflects the absolute view of the map
+        # 'transition' reflects the absolute view of the map
         # while "observation" is the view of the agent
         self.initial_state = (4, 3, Direction.UP)  # row, column, orientation
         assert self.map[self.initial_state[0]][self.initial_state[1]] == 3, "Initial position in the map should have 3"
         self.state = None
         self.observation = None
         self.use_real_state = use_real_state
+        
         assert reward_option in ['goal', 'step_cost']
         self.reward_option = reward_option
         if reward_option == 'goal':
@@ -50,6 +59,8 @@ class SimulatedEnv:
             self.STEP_REWARD = -1.0
             self.GOAL_REWARD = 0.0
             self.HOLE_REWARD = -1000.0
+
+        self.allow_all_actions = allow_all_actions
 
         if count_visits:
             self.visits = np.zeros((len(self.map), len(self.map[0])), dtype=int)
@@ -66,12 +77,14 @@ class SimulatedEnv:
     def all_actions(self):
         return self.actionset
     
-    def curr_actions(self):
-        assert self.state is not None, "Environment must be reset"
-        state = self.state
-        if 0 <= state[0] < len(self.map) \
-                and 0 <= state[1] < len(self.map[0]) \
-                and self.map[state[0]][state[1]] != 1:
+    def valid_actions(self):
+        assert self.state is not None, "Not in a state - reset the environment"
+        if self.allow_all_actions:
+            return self.actionset
+        state_ahead = self._internal_apply_action(self.state, Action.FRONT) 
+        if 0 <= state_ahead[0] < len(self.map) \
+                and 0 <= state_ahead[1] < len(self.map[0]) \
+                and self.map[state_ahead[0]][state_ahead[1]] != 1:
             return self.actionset
         else:
             return self.actionset_no_front
@@ -129,29 +142,30 @@ class SimulatedEnv:
             self.observation = self._internal_apply_action(self.observation, action)
             if self.visits is not None and action == Action.FRONT:
                 self.visits[new_state[0], new_state[1]] += 1
-        else:
-            # prohibited moves: don't change self.state and self.observation
+        elif self.allow_all_actions:
+            # invalid moves: don't change self.state and self.observation
             new_state = self.state
+        else:
+            # invalid moves are not accepted
+            raise Exception(f"Action {action} is not valid in state {self.state}!")
         
-        arrived = False
-        if self.map[new_state[0]][new_state[1]] == 2: # goal
-            arrived = True
+        is_terminal = False
+        if self.map[new_state[0]][new_state[1]] == 2:  # goal
+            is_terminal = True
             reward = self.GOAL_REWARD
         elif self.map[new_state[0]][new_state[1]] == 4:  # hole
-            arrived = True
+            is_terminal = True
             reward = self.HOLE_REWARD
         else:
+            is_terminal = False
             reward = self.STEP_REWARD
         
-        if arrived:
-            self.state = None  # but don't change the observation (that will be returned)
+        if is_terminal:
+            self.state = None  # indicates that a reset is needed; but don't change the observation that will be returned
 
-        return self.observation, reward, arrived
+        return self.observation, reward, is_terminal
 
 
-
-# Not being used anymore (see comments in _internal_apply_action())
-#_ORIENT_ERROR_MARGIN = 15.0  # in degrees
 
 class Ev3GridEnv:
     '''
@@ -160,7 +174,7 @@ class Ev3GridEnv:
     '''
     def __init__(self, robot, count_visits=False, reward_option='goal'):
         self.robot = robot
-        # Here, the "state" is the relative view of the agent
+        # Here, the 'transition' is the relative view of the agent
         # Column and row are always assumed to be 0 in the start of an episode
         # and may become negative
         self.initial_state = (0, 0, 0)  # row, column, orientation angle
@@ -190,7 +204,7 @@ class Ev3GridEnv:
     def all_actions(self):
         return self.actions
 
-    def curr_actions(self):
+    def valid_actions(self):
         assert self.state is not None, "Environment must be reset"
         if self._front_allowed():
             return self.actions
@@ -232,8 +246,8 @@ class Ev3GridEnv:
         elif action == Action.TURN_CW:
             orientation = (orientation+90) % 360
             self.robot.turnToOrientation(self.robot.getOrientation() + 90)
-            # below, it is shown a bad alternative to the line above (similar calculation was used for CW):
-            # rounded_orientation = 90.0 * ((self.robot.getOrientation() + _ORIENT_ERROR_MARGIN) // 90)
+            # below, it is shown an alternative to the line above that went bad in tests (similar calculation would be used for CW):
+            # rounded_orientation = 90.0 * ((self.robot.getOrientation() + 15.0) // 90)
             # self.robot.turnToOrientation(rounded_orientation + 90)
         elif action == Action.TURN_COUNTER_CW:
             orientation = (orientation-90) % 360

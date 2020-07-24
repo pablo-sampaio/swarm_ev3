@@ -19,13 +19,14 @@ Most algorithms are designed for multiple agents, to run with pottentially thous
 - *PID* - Very simple PID controller.
 - *LinesNavigation* - Provides functions to detect and walk on lines interlinked in arbitrary ways. Don't need to be a grid, but you need to mark, somehow the crossings on lines (e.g. a color, or a RFID tag).
 - *RfidReader* - A module to communicate with the RFID MFRC522, interfaced by the Arduino. To work, the Arduino *must* run the driver in the corresponding project.
+- *RL* - Reinforcement learning environments and agents (algorithms). A simple simulated environment in a grid world is provided together with an environment used as interface to to control the EV3 in a setting that mimics the simulated environment. The RL agents can be applied seamlessly in both.
 
 **Graph_Exploration** - Implements ECEP and  NCEP algorithms.
 
 **RFID_Arduino_Driver** - Contains the source code that must be uploaded to an
 Arduino. The code defines a communication protocol through the serial port that allows the EV3 (or even a PC) read/write from/to RFID tags.
 
-**RL_Simulated** - A project that implements some Reinforcement Learning (RL) algorithms (like *DynaQ+*) in a simulated way.
+**RL_Simulated** - A project that tests Reinforcement Learning (RL) algorithms (like *DynaQ+*) with simulated agents (not using EV3).
 
 **RL_in_EV3** - A project to run/test RL algorithms in the EV3 robots.
 

@@ -9,20 +9,23 @@ from RL.agents import DynaQPlusAgent
 
 from util import play_episodes
 
-# any of these 2 are used only in static experiments
-ENV = SimulatedEnv()
-#ENV = SimulatedEnv(reward_option='step_cost')
+# PARAMETERS FOR OPTIMIZATION
+REWARD_OPTION = 'step_cost'
+DYNAMIC_ENV = False
+
+# used only in static experiments
+ENV = SimulatedEnv(reward_option=REWARD_OPTION, allow_all_actions=False)
 
 def train_static_env(trial):
-    plan_steps = trial.suggest_int('planning_steps', 5, 100)
+    plan_steps = trial.suggest_int('planning_steps', 5, 80)
     alpha = trial.suggest_uniform('alpha', 0.1, 0.9)
     kappa = trial.suggest_uniform('kappa', 1e-10, 0.01) 
-    model_update = trial.suggest_categorical('model_update', ['state', 'state+actions', 'state+next_state+actions', 'all'])
+    model_update = trial.suggest_categorical('model_update', ['transition', 'transition+', 'optimistic_transition+']) # 'all' was not considered -- requires too much previous knowledge
 
     agent = DynaQPlusAgent(alpha=alpha, planning_steps=plan_steps, kappa=kappa, model_option=model_update)
 
     print()
-    print(f"TRIAL: plan_steps={plan_steps}, alpha={alpha}, kappa={kappa}, model_option={model_update}")
+    print(f"TRIAL (sta): plan_steps={plan_steps}, alpha={alpha}, kappa={kappa}, model_option={model_update}")
 
     # Train model
     time_sum = 0.0
@@ -31,35 +34,34 @@ def train_static_env(trial):
         agent.full_train(ENV, max_episodes=20, max_steps=7000)
         time_sum += agent.train_step 
 
-    # metric to be minimized: number of timesteps to train 
+    # metric to be minimized: number of timesteps to train 20 episodes
     return time_sum
 
 
 def change_environment(env):
-    env.map[2][0] = 1   # closes a corridor in the start of a row
-    env.map[2][-1] = 0  # opens another one on the other end of the row
-
+    env.map[2][-1] = 0  # opens another corridor on the other end of the row
 
 def train_dynamic_env(trial):
-    plan_steps = trial.suggest_int('planning_steps', 5, 100)
+    plan_steps = trial.suggest_int('planning_steps', 5, 80)
     alpha = trial.suggest_uniform('alpha', 0.1, 0.9)
     kappa = trial.suggest_uniform('kappa', 1e-10, 0.01) 
-    model_update = trial.suggest_categorical('model_update', ['state', 'state+actions', 'state+next_state+actions', 'all'])
+    model_update = trial.suggest_categorical('model_option', ['transition', 'transition+', 'optimistic_transition+'])  # 'all' not considered (see comment above)
 
     agent = DynaQPlusAgent(alpha=alpha, planning_steps=plan_steps, kappa=kappa, model_option=model_update)
 
     print()
-    print(f"TRIAL: plan_steps={plan_steps}, alpha={alpha}, kappa={kappa}, model_option={model_update}")
+    print(f"TRIAL (dyn): plan_steps={plan_steps}, alpha={alpha}, kappa={kappa}, model_option={model_update}")
 
     MAX_STEPS = 6000
     CHANGE_AT = 3500  # time to change environment
 
     # Train model
     cum_reward = 0.0
+    episodes = 0
     for run in range(1):
         rand.seed(run + 10)
 
-        env = SimulatedEnv()
+        env = SimulatedEnv(reward_option=REWARD_OPTION, allow_all_actions=False)
         agent.start_train(env)
         num_steps = 0
 
@@ -72,38 +74,29 @@ def train_dynamic_env(trial):
                 # change the environment
                 if num_steps == CHANGE_AT:
                     change_environment(agent.env)
+                if is_terminal:
+                    episodes += 1
 
-    # metric to be maximized: cumulative reward
-    return cum_reward
+    #return cum_reward   # maximize cumulative reward
+    return episodes     # maximize number of finished episodes
 
 
 if __name__ == '__main__':
-    study = optuna.create_study(storage='sqlite:///sim_env.db', study_name='sim_env', load_if_exists=True)
-    study.optimize(train_static_env, n_trials=100)
-    
-    #study = optuna.create_study(storage='sqlite:///sim_env.db', direction='maximize', study_name='sim_dyn_env_2', load_if_exists=True)
-    #study.optimize(train_dynamic_env, n_trials=200)
+    if DYNAMIC_ENV:
+        study = optuna.create_study(storage='sqlite:///optuna_db.db', study_name='dynamic_'+REWARD_OPTION, load_if_exists=True)
+        study.optimize(train_static_env, n_trials=100)
+    else:    
+        study = optuna.create_study(storage='sqlite:///optuna_db.db', study_name='static_'+REWARD_OPTION, load_if_exists=True)
+        study.optimize(train_static_env, n_trials=100)
 
-    #study = optuna.create_study(storage='sqlite:///sim_env.db', study_name='sim_env_stepcost_dynaq_k0', load_if_exists=True)
-    #study.optimize(train_static_env, n_trials=100)
+    print("Finished results for", "dynamic" if DYNAMIC_ENV else "static", "environment with reward option", REWARD_OPTION)
 
     '''
     EXCELENTE RESULTADO ESTATICO (200 trials), mas tambem bom em ambiente dinamico:
     Current best value is 2051.0 with parameters: 
-    {'alpha': 0.8715057749268625, 'kappa': 0.0005103567175066837, 'model_update': 'state+next_state+actions', 'planning_steps': 68}.
+    {'alpha': 0.8715057749268625, 'kappa': 0.0005103567175066837, 'model_update': 'optimistic_transition+', 'planning_steps': 68}.
 
-    RESULTADO DINAMICO (200 trials), mas foi ruim no experimento final:
-    Current best value is 331.0 with parameters: 
-    {'alpha': 0.6912174835109899, 'kappa': 0.00025776587656380903, 'model_update': 'state+actions', 'planning_steps': 48}.
-
-    ESTÁTICO USANDO step_cost:
-    Current best value is 2539.0 with parameters: 
-    {'alpha': 0.8990851646314703, 'kappa': 0.008284247329579839, 'model_update': 'state', 'planning_steps': 89}.
-
-    ESTATICO, com step_cost e k=0 (100 trials):
-    Current best value is 1891.0 with parameters: 
-    {'alpha': 0.6482801021137697, 'model_update': 'state+actions', 'planning_steps': 51}
-
+    
     '''
 
     print("FINISHED!")
