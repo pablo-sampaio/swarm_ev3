@@ -183,6 +183,7 @@ def run_num_steps(EnvClass, AgentClass,
     np.save(RESULTS_DIR + result_file_name, log_data)
 
 
+# performance_metric can be 'cum_reward_all' or 'finished_episodes'
 def plot_results_per_step(file_path, title, performance_metric, y_label):
     data_all = np.load(RESULTS_DIR + file_path, allow_pickle=True).item()
     data_y_all = data_all[performance_metric]

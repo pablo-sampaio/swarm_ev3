@@ -9,9 +9,10 @@ from RL.agents import DynaQPlusAgent
 
 from util import play_episodes
 
-# PARAMETERS FOR OPTIMIZATION
+# FIXED PARAMETERS OF THE ENVIRONMENT/AGENT 
 REWARD_OPTION = 'step_cost'
 DYNAMIC_ENV = False
+USE_KAPPA = False   # if True, it is Dyna-Q+; else, it is Dyna-Q
 
 # used only in static experiments
 ENV = SimulatedEnv(reward_option=REWARD_OPTION, allow_all_actions=False)
@@ -19,7 +20,10 @@ ENV = SimulatedEnv(reward_option=REWARD_OPTION, allow_all_actions=False)
 def train_static_env(trial):
     plan_steps = trial.suggest_int('planning_steps', 5, 80)
     alpha = trial.suggest_uniform('alpha', 0.1, 0.9)
-    kappa = trial.suggest_uniform('kappa', 1e-10, 0.01) 
+    if USE_KAPPA:
+        kappa = trial.suggest_uniform('kappa', 1e-10, 0.01) 
+    else:
+        kappa = 0.0
     model_update = trial.suggest_categorical('model_update', ['transition', 'transition+', 'optimistic_transition+']) # 'all' was not considered -- requires too much previous knowledge
 
     agent = DynaQPlusAgent(alpha=alpha, planning_steps=plan_steps, kappa=kappa, model_option=model_update)
@@ -44,7 +48,10 @@ def change_environment(env):
 def train_dynamic_env(trial):
     plan_steps = trial.suggest_int('planning_steps', 5, 80)
     alpha = trial.suggest_uniform('alpha', 0.1, 0.9)
-    kappa = trial.suggest_uniform('kappa', 1e-10, 0.01) 
+    if USE_KAPPA:
+        kappa = trial.suggest_uniform('kappa', 1e-10, 0.01) 
+    else:
+        kappa = 0.0
     model_update = trial.suggest_categorical('model_option', ['transition', 'transition+', 'optimistic_transition+'])  # 'all' not considered (see comment above)
 
     agent = DynaQPlusAgent(alpha=alpha, planning_steps=plan_steps, kappa=kappa, model_option=model_update)
@@ -77,26 +84,36 @@ def train_dynamic_env(trial):
                 if is_terminal:
                     episodes += 1
 
-    #return cum_reward   # maximize cumulative reward
-    return episodes     # maximize number of finished episodes
+    #return -cum_reward   # maximize cumulative reward
+    return -episodes     # maximize number of finished episodes
 
 
 if __name__ == '__main__':
     if DYNAMIC_ENV:
-        study = optuna.create_study(storage='sqlite:///optuna_db.db', study_name='dynamic_'+REWARD_OPTION, load_if_exists=True)
-        study.optimize(train_static_env, n_trials=100)
+        study = optuna.create_study(storage='sqlite:///optimize_dqplus.db', study_name='dynamic_'+REWARD_OPTION+'_k_'+str(USE_KAPPA), load_if_exists=True)
+        study.optimize(train_dynamic_env, n_trials=100)
     else:    
-        study = optuna.create_study(storage='sqlite:///optuna_db.db', study_name='static_'+REWARD_OPTION, load_if_exists=True)
+        study = optuna.create_study(storage='sqlite:///optimize_dqplus.db', study_name='static_'+REWARD_OPTION+'_'+str(USE_KAPPA), load_if_exists=True)
         study.optimize(train_static_env, n_trials=100)
 
-    print("Finished results for", "dynamic" if DYNAMIC_ENV else "static", "environment with reward option", REWARD_OPTION)
+    print("FINISHED results for", 
+        "DynaQ-PLUS" if USE_KAPPA else "Dyna-Q",
+        "dynamic" if DYNAMIC_ENV else "static", "environment", 
+        "with reward option", REWARD_OPTION)
 
     '''
-    EXCELENTE RESULTADO ESTATICO (200 trials), mas tambem bom em ambiente dinamico:
-    Current best value is 2051.0 with parameters: 
-    {'alpha': 0.8715057749268625, 'kappa': 0.0005103567175066837, 'model_update': 'optimistic_transition+', 'planning_steps': 68}.
+    DYNA-Q STEP_COST / ESTATICO:
+    Current best value is 2420.0 with parameters: 
+    {'alpha': 0.8596454428029752, 'model_update': 'transition', 'planning_steps': 70}.
+    FINISHED results for Dyna-Q static environment with reward option step_cost
 
-    
+    DYNA-Q-PLUS STEP_COST / ESTATICO:
+    Current best value is 2397.0 with parameters: 
+    {'alpha': 0.837684237749518, 'kappa': 0.004700042668218965, 'model_update': 'transition', 'planning_steps': 68}.
+    FINISHED results for static environment with reward option step_cost
+
+    DYNA-Q-PLUS STEP_COST / DINAMICO:
+    Current best value is -388.0 with parameters: 
+    {'alpha': 0.899265696824145, 'kappa': 0.007269805815171486, 'model_option': 'transition', 'planning_steps': 77}.
+    FINISHED results for dynamic environment with reward option step_cost
     '''
-
-    print("FINISHED!")

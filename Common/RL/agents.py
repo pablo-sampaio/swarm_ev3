@@ -73,7 +73,8 @@ class TabularQ(object):
 
 class DynaQPlusAgent(object):
 
-    def __init__(self, epsilon=0.1, gamma=0.98, alpha=0.1, planning_steps=5, kappa=0.00001, model_option='transition+', default_q=0.0):
+    def __init__(self, epsilon=0.1, gamma=0.98, alpha=0.1, planning_steps=5, kappa=0.00001, 
+            model_option='transition', initial_policy='e-greedy', default_q=0.0):
         self.epsilon = epsilon
         self.gamma = gamma
         self.alpha = alpha
@@ -85,6 +86,8 @@ class DynaQPlusAgent(object):
         self.model_option = model_option
         self.train_step = 0
         self.default_q = default_q
+        assert initial_policy in ['e-greedy', 'state-action-count', 'state-count', 'cell-count']
+        self.initial_policy = initial_policy
 
     def choose_action(self, s):
         return self.qtable.argmax(s)
@@ -116,6 +119,23 @@ class DynaQPlusAgent(object):
 
         self.epi_step = 0
         self.epi_finished = 0  # number of episodes finished
+
+        if self.initial_policy == 'e-greedy':
+            self.policy = self.e_greedy_policy
+        elif self.initial_policy == 'state-action-count':
+            self.count = {}
+            self.policy = self.state_action_count_policy
+        elif self.initial_policy == 'state-count':
+            self.count = {}
+            self.count[self.state] = 1
+            self.policy = self.state_count_policy
+        elif self.initial_policy == 'cell-count':
+            self.count = {}
+            self.count[self.state[0:2]] = 1
+            self.policy = self.cell_count_policy
+        else:
+            raise("Unexpected")
+
         return self.state
 
     # Calling this method to reset the environment is optional.
@@ -125,21 +145,32 @@ class DynaQPlusAgent(object):
         self.state = self.env.reset()
         return self.state
 
-    def step_train(self):
-        if self.state == None:
-            self.state = self.env.reset()
-
-        # select ction
-        actions_in_state = self.env.valid_actions()
+    def e_greedy_policy(self, state, actions_in_state):
         if rand.random() < self.epsilon:
             action = rand.choice(actions_in_state)
         else:
-            action, _ = self.qtable.argmax(self.state, actions_in_state)
+            action, _ = self.qtable.argmax(state, actions_in_state)
+        return action
+
+    def step_train(self):
+        if self.state == None:
+            # when the first episode finishes, the e-greedy policy is used
+            self.policy = self.e_greedy_policy
+            self.state = self.env.reset()
+
+        # select action
+        actions_in_state = self.env.valid_actions()
+        action = self.policy(self.state, actions_in_state)
 
         # apply action
         new_state, reward, is_terminal = self.env.apply_action(action)
         self.train_step += 1
         self.epi_step += 1
+        
+        if self.policy == self.state_count_policy:
+            self.count[new_state] = self.count.get(new_state,0) + 1
+        elif self.policy == self.cell_count_policy:
+            self.count[new_state[0:2]] = self.count.get(new_state[0:2],0) + 1
 
         # update Q, by direct RL
         if is_terminal:
@@ -217,6 +248,56 @@ class DynaQPlusAgent(object):
             q_s_a = self.qtable.value(s, a)
             q_s_a += self.alpha * (target_q - q_s_a)
             self.qtable.set(s, a, q_s_a)
+
+    def state_action_count_policy(self, state, actions_in_state):
+        min_count = 1000000
+        min_actions = []
+        for a in actions_in_state:
+            cnt = self.count.get((state,a), 0)
+            if cnt < min_count:
+                min_count = cnt
+                min_actions = [ a ]
+            elif cnt == min_count:
+                min_actions.append(a)
+        action = rand.choice(min_actions)
+        self.count[state,action] = min_count + 1
+        return action
+
+    def state_count_policy(self, state, actions_in_state):
+        min_count = 1000000
+        min_actions = []
+        for a in actions_in_state:
+            # the model has this state-action pair and it is not a loop
+            if (state,a) not in self.model or self.model[state,a][1] == state:
+                cnt = 0
+            else:
+                new_state = self.model[state,a]
+                cnt = self.count.get(new_state,0)
+            if cnt < min_count:
+                min_count = cnt
+                min_actions = [ a ]
+            elif cnt == min_count:
+                min_actions.append(a)
+        action = rand.choice(min_actions)
+        return action
+
+    def cell_count_policy(self, state, actions_in_state):
+        min_count = 1000000
+        min_actions = []
+        for a in actions_in_state:
+            # the model has this state-action pair and it is not a loop
+            if (state,a) not in self.model or self.model[state,a][1] == state:
+                cnt = 0
+            else:
+                new_state = self.model[state,a][1]
+                cnt = self.count.get(new_state[0:2],0)  # keys are only the first two components of state (row and column, without direction)
+            if cnt < min_count:
+                min_count = cnt
+                min_actions = [ a ]
+            elif cnt == min_count:
+                min_actions.append(a)
+        action = rand.choice(min_actions)
+        return action
 
 
 class LRTAStarAgent:
