@@ -138,10 +138,9 @@ def run_num_steps(EnvClass, AgentClass,
             # the condition on "num_steps" here must be the same as in the inner loop
             # removing "-1" only here causes infinite loop
             while num_steps < num_max_steps-1 :
-                # this is the initial state of an episode (not returned by train_step)
-                state = state_to_int(env, agent.state)
-
                 if count_visits:
+                   # this is the initial state of an episode (not returned by train_step)
+                    state = state_to_int(env, agent.state)
                     if num_steps < step_to_change_env: 
                         state_visits_before_change[idx][run][state] += 1
                     else:
@@ -150,9 +149,8 @@ def run_num_steps(EnvClass, AgentClass,
                 is_terminal = False
                 while not is_terminal and num_steps < num_max_steps-1 :
                     a, r, state, is_terminal = agent.step_train()
-                    
-                    state = state_to_int(env, state)
                     num_steps += 1
+
                     # change the environment
                     if num_steps == step_to_change_env:
                         env_changer_proc(agent.env)
@@ -163,6 +161,7 @@ def run_num_steps(EnvClass, AgentClass,
                     finished_episodes[idx][run][num_steps] = finished_eps
 
                     if count_visits:
+                        state = state_to_int(env, state)
                         if num_steps < step_to_change_env:
                             state_visits_before_change[idx][run][state] += 1
                         else:
@@ -184,7 +183,13 @@ def run_num_steps(EnvClass, AgentClass,
 
 
 # performance_metric can be 'cum_reward_all' or 'finished_episodes'
-def plot_results_per_step(file_path, title, performance_metric, y_label):
+def plot_results_per_step(file_path, title, performance_metric):
+    if performance_metric == 'finished_episodes':
+        y_label = 'Finished\nepisodes'
+    elif performance_metric == 'cum_reward_all':
+        y_label = 'Cumulative\nreward'
+    else:
+        raise Exception(f"Unexpected metric: {performance_metric}")
     data_all = np.load(RESULTS_DIR + file_path, allow_pickle=True).item()
     data_y_all = data_all[performance_metric]
     agent_param = data_all['agent_param']
@@ -232,7 +237,14 @@ def plot_state_visitations(file_path, plot_titles, idx, shape_env):
 
 
 def plot_results_comparison(file_name_dynaq, file_name_dynaqplus, dq_plus_plan_steps,
-        performance_metric='cum_reward_all', ylabel='Cumulative\nreward'):
+        performance_metric='cum_reward_all'):
+    if performance_metric == 'finished_episodes':
+        ylabel = 'Finished\nepisodes'
+    elif performance_metric == 'cum_reward_all':
+        ylabel = 'Cumulative\nreward'
+    else:
+        raise Exception(f"Unexpected metric: {performance_metric}")
+
     # gets and plots the results of DynaQ with 50 steps
     dynaq = np.load(RESULTS_DIR + file_name_dynaq, allow_pickle=True).item()
     assert dynaq['agent_param'] == 'planning_steps', "Wrong results file given for Dyna-Q?"

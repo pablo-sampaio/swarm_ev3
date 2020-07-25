@@ -25,32 +25,40 @@ with the DynaQ+, specially because of its use with varying sets of actions in pl
 Be carefaul if you want to change.
 '''
 class TabularQ(object):
-    def __init__(self):
+    def __init__(self, all_actions):
         self.q = {}  # dictionary for pairs (s,a)
         self.get = self.value  # alternative name
+        #self.initialized_states = set()
+        self.all_actions = all_actions
 
     def set(self, s, a, value):
-        assert (s,a) in self.q
         self.q[s,a] = value
-    
-    def set_all(self, s, actions_in_s, default_value):
-        for a in actions_in_s:
-            if (s,a) in self.q:  # if it has value for one action from s, it has for all actions
-                break
-            self.q[s,a] = default_value
 
-    def value(self, s, a):
-        return self.q[s,a]
+    def value(self, s, a, default_q=None):
+        if default_q is None:
+            return self.q[s,a]
+        else:
+            return self.q.get((s,a), default_q)  
     
-    def argmax(self, s, actions_in_s, ignore_missing=False):
+    def initialize_values(self, s, actions_in_s, default_value):
+        # disabled the code below because of environments that change dynamically
+        #if s in self.initialized_states:
+        #    return
+        #self.initialized_states.add(s)
+        for a in self.all_actions:
+            if a in actions_in_s:
+                if (s,a) not in self.q:
+                    self.q[s,a] = default_value
+            else:
+                # remove entries for invalid actions, added during planning 
+                # why not set to -inf? to avoid it to be drawn during planning somehow
+                self.q.pop(s,a)
+
+    def argmax(self, s, actions_in_s):
         ties = []
         max_q = float("-inf")
         for a in actions_in_s:
-            # the ignore missing flag works like an assertion, i.e. to make sure
-            # that just in some situations entries can be ignored
-            if ignore_missing and (s,a) not in self.q:
-                continue  # i.e., don't execute the rest of the loop
-            curr_q = self.q[s,a]
+            curr_q = self.q[s,a]  # all entries must exist
             if curr_q > max_q:
                 max_q = curr_q
                 ties = [a]
@@ -59,9 +67,15 @@ class TabularQ(object):
         #assert max_q != float("-inf")  # ok in the tests
         return rand.choice(ties), max_q
     
-    def max(self, s, actions_in_s, ignore_missing=False):
+    def max(self, s, actions_in_s=None):
         top = float("-inf")
+        ignore_missing = (actions_in_s is None)
+        if ignore_missing:
+            actions_in_s = self.all_actions
         for a in actions_in_s:
+            # this 'ignore_missing' verification works as an "assert" to ensure
+            # that only in certain situations some entries may be missing
+            # this happens only in "planning" with certain model options (e.g. 'all')
             if ignore_missing and (s,a) not in self.q:
                 continue  # i.e., don't execute the rest of the loop
             curr_q = self.q[s,a]
@@ -106,11 +120,11 @@ class DynaQPlusAgent(object):
     def start_train(self, env):
         self.env = env
         self.all_actions = env.all_actions()
-        self.qtable = TabularQ()
+        self.qtable = TabularQ(env.all_actions())
         self.model = dict({})  # keys are pairs (state, action)
         
         self.state = self.env.reset()
-        self.qtable.set_all(self.state, self.env.valid_actions(), self.default_q)
+        self.qtable.initialize_values(self.state, self.env.valid_actions(), self.default_q)
         self.train_step = 0
 
         if self.model_option == 'all':
@@ -142,6 +156,8 @@ class DynaQPlusAgent(object):
     # It is useful only if you want to know each start state.
     def reset_env(self):
         assert self.state == None, "Episode not finished"  # it is ok to disable this
+        if self.epi_finished == 1: 
+            self.policy = self.e_greedy_policy
         self.state = self.env.reset()
         return self.state
 
@@ -155,7 +171,9 @@ class DynaQPlusAgent(object):
     def step_train(self):
         if self.state == None:
             # when the first episode finishes, the e-greedy policy is used
-            self.policy = self.e_greedy_policy
+            # obs.: should work fine without testing this conditions
+            if self.epi_finished == 1: 
+                self.policy = self.e_greedy_policy
             self.state = self.env.reset()
 
         # select action
@@ -177,10 +195,11 @@ class DynaQPlusAgent(object):
             target_q = reward
         else:
             actions_in_new_state = self.env.valid_actions()
-            self.qtable.set_all(new_state, actions_in_new_state, self.default_q) # initializes the q-table for 'new_state'
+            # initializes the q-table for 'new_state'
+            self.qtable.initialize_values(new_state, actions_in_new_state, self.default_q) 
             target_q = reward + self.gamma * self.qtable.max(new_state, actions_in_new_state)
         
-        q_state_action = self.qtable.value(self.state, action)
+        q_state_action = self.qtable.value(self.state, action, self.default_q)
         q_state_action += self.alpha * (target_q - q_state_action)
         self.qtable.set(self.state, action, q_state_action)
         
@@ -211,6 +230,7 @@ class DynaQPlusAgent(object):
             pass
         elif self.model_option == 'transition+' or self.model_option == 'optimistic_transition+':
             assumed_r = 0.0 if self.model_option == 'transition+' else 1.0  # optimism: assumes reward 1!
+            # TODO: attention! what happens if the environment changes? adding or blocking an action
             for a in actions_in_state:
                 if (state,a) in self.model: # if it has entry for one action (in state), it has for all
                     break
@@ -244,8 +264,8 @@ class DynaQPlusAgent(object):
             if is_terminal:
                 target_q = r
             else:
-                target_q = r + self.gamma * self.qtable.max(next_s, self.all_actions, ignore_missing=True) 
-            q_s_a = self.qtable.value(s, a)
+                target_q = r + self.gamma * self.qtable.max(next_s, None) 
+            q_s_a = self.qtable.value(s, a, self.default_q)
             q_s_a += self.alpha * (target_q - q_s_a)
             self.qtable.set(s, a, q_s_a)
 
@@ -271,13 +291,15 @@ class DynaQPlusAgent(object):
             if (state,a) not in self.model or self.model[state,a][1] == state:
                 cnt = 0
             else:
-                new_state = self.model[state,a]
-                cnt = self.count.get(new_state,0)
+                new_state = self.model[state,a][1]
+                cnt = self.count.get(new_state, 0)
+            
             if cnt < min_count:
                 min_count = cnt
                 min_actions = [ a ]
             elif cnt == min_count:
                 min_actions.append(a)
+        
         action = rand.choice(min_actions)
         return action
 
@@ -291,11 +313,13 @@ class DynaQPlusAgent(object):
             else:
                 new_state = self.model[state,a][1]
                 cnt = self.count.get(new_state[0:2],0)  # keys are only the first two components of state (row and column, without direction)
+            
             if cnt < min_count:
                 min_count = cnt
                 min_actions = [ a ]
             elif cnt == min_count:
                 min_actions.append(a)
+        
         action = rand.choice(min_actions)
         return action
 

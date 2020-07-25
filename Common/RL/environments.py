@@ -68,9 +68,10 @@ class SimulatedEnv:
             self.visits = None
         self.count_visits = count_visits
         
-        self.actionset = list(Action)
-        self.actionset_no_front = list(Action)
-        self.actionset_no_front.remove(Action.FRONT)
+        self.actionset = tuple(Action) # immuttable
+        actionset_no_front = list(Action)
+        actionset_no_front.remove(Action.FRONT)
+        self.actionset_no_front = tuple(actionset_no_front)
 
         self.step = self.apply_action # another name for the function (similar to the name used in gym)
 
@@ -98,7 +99,7 @@ class SimulatedEnv:
         if self.use_real_state:
             self.observation = self.state
         else:
-            self.observation = (0, 0, Direction.UP) # can be randomized, at least the direction
+            self.observation = (0, 0, Direction.UP)
         if self.visits is not None:
             self.visits[self.state[0], self.state[1]] += 1
         return self.observation
