@@ -34,14 +34,14 @@ class LRTAStarAgent:
         self.state = self.env.reset()
         # on first episode, initialize the "h-table" for the initial state (assuming it is always the same)
         if self.epi_finished == 0:
-            self.h.initialize_values(self.state, self.env.valid_actions(), self.default_q) 
+            self.h.initialize_values(self.state, self.env.curr_actions(), self.default_q) 
         return self.state
 
     def step_train(self):
         if self.state is None:
             self.reset_env()
 
-        actions_in_state = self.env.valid_actions()
+        actions_in_state = self.env.curr_actions()
         action, _ = self.h.argmax(self.state, actions_in_state)
 
         new_state, reward, terminal = self.env.apply_action(action)
@@ -52,7 +52,7 @@ class LRTAStarAgent:
         if terminal:
             new_h = reward 
         else:
-            actions_in_new_state = self.env.valid_actions()
+            actions_in_new_state = self.env.curr_actions()
             # initializes the q-table for 'new_state'
             self.h.initialize_values(new_state, actions_in_new_state, self.default_q) 
             new_h = reward + self.h.max(new_state) 

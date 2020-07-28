@@ -44,7 +44,9 @@ class SimulatedEnv:
         # 'transition' reflects the absolute view of the map
         # while "observation" is the view of the agent
         self.initial_state = (4, 3, Direction.UP)  # row, column, orientation
-        assert self.map[self.initial_state[0]][self.initial_state[1]] == 3, "Initial position in the map should have 3"
+        self.goal_position = (0, 6)
+        assert self.map[self.initial_state[0]][self.initial_state[1]] == 3, "Initial position in the map should have value 3"
+        assert self.map[self.goal_position[0]][self.goal_position[1]] == 2, "Goal position in the map should have value 2"
         self.state = None
         self.observation = None
         self.use_real_state = use_real_state
@@ -78,7 +80,7 @@ class SimulatedEnv:
     def all_actions(self):
         return self.actionset
     
-    def valid_actions(self):
+    def curr_actions(self):
         assert self.state is not None, "Not in a state - reset the environment"
         if self.allow_all_actions:
             return self.actionset
@@ -91,8 +93,7 @@ class SimulatedEnv:
             return self.actionset_no_front
 
     def states(self):
-        positions = product(range(len(self.map)), range(len(self.map[0])))
-        return product(positions, list(Direction))
+        return product(range(len(self.map)), range(len(self.map[0])), list(Direction))
 
     def reset(self):
         self.state = self.initial_state 
@@ -116,7 +117,7 @@ class SimulatedEnv:
             elif direction == Direction.LEFT:
                 col -= 1
             else:
-                raise Exception("Invalid direction")
+                raise Exception()
         elif action == Action.TURN_CW:
             direction = Direction( (direction.value + 1) % 4 )
         elif action == Action.TURN_COUNTER_CW:
@@ -206,7 +207,7 @@ class Ev3GridEnv:
     def all_actions(self):
         return self.actions
 
-    def valid_actions(self):
+    def curr_actions(self):
         assert self.state is not None, "Environment must be reset"
         if self._front_allowed():
             return self.actions

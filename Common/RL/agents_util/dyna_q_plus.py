@@ -62,7 +62,7 @@ class DynaQPlusAgent(object):
         self.state = self.env.reset()
 
         if self.epi_finished == 0: # before training one episode
-            self.qtable.initialize_values(self.state, self.env.valid_actions(), self.default_q)
+            self.qtable.initialize_values(self.state, self.env.curr_actions(), self.default_q)
 
         return self.state
 
@@ -71,7 +71,7 @@ class DynaQPlusAgent(object):
             self.reset_env()
 
         # select action
-        actions_in_state = self.env.valid_actions()
+        actions_in_state = self.env.curr_actions()
         if rand.random() < self.epsilon:
             action = rand.choice(actions_in_state)
         else:
@@ -86,7 +86,7 @@ class DynaQPlusAgent(object):
         if is_terminal:
             target_q = reward
         else:
-            actions_in_new_state = self.env.valid_actions()
+            actions_in_new_state = self.env.curr_actions()
             # initializes the q-table for 'new_state'
             self.qtable.initialize_values(new_state, actions_in_new_state, self.default_q) 
             target_q = reward + self.gamma * self.qtable.max(new_state, actions_in_new_state)

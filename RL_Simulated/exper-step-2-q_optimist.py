@@ -8,14 +8,6 @@ import sys
 from RL.agents import DynaQPlusAgentExperimental
 from RL.environments import SimulatedEnv
 
-def change_environment(env):
-    env.map[2][-1] = 0  # opens another corridor on the other end of row 2
-
-env = SimulatedEnv()
-shape_env = (len(env.map), len(env.map[0]))
-#change_environment(env)
-#print(env.map)
-
 set_results_dir("results-stepcost") # from experiment_util
 
 # Experiment parameters
@@ -40,13 +32,13 @@ agent_parameters = {
     "planning_steps" : 50,
     "kappa" : 0.0,                      # To behave as Dyna-Q
     "model_option" : 'transition',
-    "default_q" : [-1.0, 0.0, 1.0]      # List of values to test -- ALL are optimistic values
+    "default_q" : [-1.0, 0.0, 1.0] # List of values to test -- ALL are optimistic values
 }
 
 results_filename1 = os.path.basename(__file__) + "-epi.npy"
 results_filename2 = os.path.basename(__file__) + "-steps.npy"
 
-'''
+#'''
 run_episodes(SimulatedEnv, DynaQPlusAgentExperimental, 
     env_parameters, agent_parameters, experiment_parameters,
     'default_q', 
@@ -55,7 +47,7 @@ run_episodes(SimulatedEnv, DynaQPlusAgentExperimental,
 print(results_filename1, "saved.")
 #'''
 
-'''
+#'''
 run_num_steps(SimulatedEnv, DynaQPlusAgentExperimental,
     env_parameters, agent_parameters, experiment_parameters,
     'default_q', 

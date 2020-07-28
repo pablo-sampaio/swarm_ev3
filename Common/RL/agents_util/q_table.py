@@ -34,17 +34,14 @@ class TabularQ(object):
             return self.q.get((s,a), default_q)  
     
     def initialize_values(self, s, actions_in_s, default_value):
-        # disabled the code below because of environments that change dynamically
-        #if s in self.initialized_states:
-        #    return
-        #self.initialized_states.add(s)
+        # disabled the verification for initialized states because of environments that change dynamically
         for a in self.all_actions:
             if a in actions_in_s:
                 if (s,a) not in self.q:
                     self.q[s,a] = default_value
             else:
                 # remove entries for invalid actions, added during planning 
-                # Q: why not set to -inf? R: to avoid it to be drawn during planning 
+                # Q: why not set to -inf? R: to prevent it to be drawn during planning 
                 self.q.pop(s,a)
 
     def argmax(self, s, actions_in_s):

@@ -19,9 +19,16 @@ except AttributeError:
     rand.choices = _choices
 
 
+# obs.: imperfect because of obstacles and additional turns that may  
+# be required to get to the goal, but it works as an optimistic value
+def distance_to_goal(state, goal):
+    dist = abs(state[0] - goal[0]) + abs(state[1] - goal[1])
+    return dist
+
+
 class DynaQPlusAgentExperimental(object):
     def __init__(self, epsilon=0.1, gamma=0.98, alpha=0.1, planning_steps=5, kappa=0.00001, 
-            model_option='transition', initial_policy='e-greedy', default_q=0.0):
+            model_option='transition', reverse_actions=False, initial_policy='e-greedy', default_q=0.0):
         self.epsilon = epsilon
         self.gamma = gamma
         self.alpha = alpha
@@ -31,10 +38,14 @@ class DynaQPlusAgentExperimental(object):
         self.model = None
         assert model_option in ['transition', 'transition+', 'optimistic_transition+', 'all']
         self.model_option = model_option
-        self.train_step = 0
-        self.default_q = default_q
+        self.reverse_action = reverse_actions
         assert initial_policy in ['e-greedy', 'state-action-count', 'state-count', 'cell-count']
         self.initial_policy = initial_policy
+        assert isinstance(default_q, (float, int, str))
+        if isinstance(default_q, str):
+            assert default_q in ['goal_dist', 'tentative_goal_dist']
+        self.default_q = default_q
+        self.train_step = 0
 
     def choose_action(self, s):
         return self.qtable.argmax(s)
@@ -59,12 +70,15 @@ class DynaQPlusAgentExperimental(object):
         self.state = None
         self.train_step = 0
         self.epi_step = 0
-        self.epi_finished = 0  # number of episodes finished
+        self.epi_finished = 0  # number of finished episodes
 
         if self.model_option == 'all':
             for s_a in product(env.states(), list(Action)):
                 self.model[s_a] = (0.0, s_a[0], False, self.train_step)
 
+        if isinstance(self.default_q, str) and self.default_q == 'tentative_goal_dist':
+            self.tentative_goal = ( rand.randint(0, len(env.map)), 
+                                    rand.randint(0, len(env.map[0])) )
 
         if self.initial_policy == 'e-greedy':
             self.policy = self.e_greedy_policy
@@ -80,7 +94,45 @@ class DynaQPlusAgentExperimental(object):
             self.count[self.state[0:2]] = 1
             self.policy = self.cell_count_policy
         else:
-            raise("Unexpected")
+            raise Exception()
+
+    '''def init_q_for_state(self, state, actions_in_state):
+        if isinstance(self.default_q, (int,float)):
+            self.qtable.initialize_values(state, actions_in_state, self.default_q)
+        elif isinstance(self.default_q, str) and self.default_q == 'goal_dist':
+            dist = distance_to_goal(state, self.env.goal_position)
+            dist = (-1)*(1.0 - self.gamma**dist) / (1.0 - self.gamma) # formula for geometric series, assuming each step gives -1 reward
+            self.qtable.initialize_values(state, actions_in_state, dist)
+        elif isinstance(self.default_q, str) and self.default_q == 'tentative_goal_dist':
+            if state[0:2] == self.tentative_goal:
+                # TODO: escolher apenas entre locais nao visitados
+                self.tentative_goal = ( rand.randint(0, len(self.env.map)), 
+                                        rand.randint(0, len(self.env.map[0])) )
+            dist = distance_to_goal(state, self.tentative_goal)
+            dist = (-1)*(1.0 - self.gamma**dist) / (1.0 - self.gamma) # formula for geometric series, assuming each step gives -1 reward
+            self.qtable.initialize_values(state, actions_in_state, dist)
+        else:
+            raise Exception()'''
+
+    def get_heuristic_q(self, state, may_change_tentative):
+        if isinstance(self.default_q, (int,float)):
+            return self.default_q
+        elif isinstance(self.default_q, str) and self.default_q == 'goal_dist':
+            dist = distance_to_goal(state, self.env.goal_position)
+            dist = (-1)*(1.0 - self.gamma**dist) / (1.0 - self.gamma) # formula for geometric series, assuming each step gives -1 reward
+            return dist
+        elif isinstance(self.default_q, str) and self.default_q == 'tentative_goal_dist':
+            # the tentative_goal is a fake goal chosen randomly to calculate initial q-values (for new states)
+            # it is changed when the agent arrives in that assumed goal
+            if may_change_tentative and state[0:2] == self.tentative_goal:
+                # ideia: escolher preferencialmente entre locais nao visitados ou menos visitados
+                self.tentative_goal = ( rand.randint(0, len(self.env.map)), 
+                                        rand.randint(0, len(self.env.map[0])) )
+            dist = distance_to_goal(state, self.tentative_goal)
+            dist = (-1)*(1.0 - self.gamma**dist) / (1.0 - self.gamma) # formula for geometric series, assuming each step gives -1 reward
+            return dist
+        else:
+            raise Exception()
 
     # Calling this method to reset the environment is optional.
     # It is useful only if you want to know each start state.
@@ -90,7 +142,10 @@ class DynaQPlusAgentExperimental(object):
         self.state = self.env.reset()
        
         if self.epi_finished == 0: # before training one episode
-            self.qtable.initialize_values(self.state, self.env.valid_actions(), self.default_q)
+            q_state = self.get_heuristic_q(self.state, True)
+            if math.isnan(q_state):
+                print()
+            self.qtable.initialize_values(self.state, self.env.curr_actions(), q_state)
         elif self.epi_finished == 1: # after training one episode
             self.policy = self.e_greedy_policy
         
@@ -108,7 +163,7 @@ class DynaQPlusAgentExperimental(object):
             self.reset_env()
 
         # select action
-        actions_in_state = self.env.valid_actions()
+        actions_in_state = self.env.curr_actions()
         action = self.policy(self.state, actions_in_state)
 
         # apply action
@@ -125,12 +180,15 @@ class DynaQPlusAgentExperimental(object):
         if is_terminal:
             target_q = reward
         else:
-            actions_in_new_state = self.env.valid_actions()
+            actions_in_new_state = self.env.curr_actions()
             # initializes the q-table for 'new_state'
-            self.qtable.initialize_values(new_state, actions_in_new_state, self.default_q) 
+            q_new_state = self.get_heuristic_q(new_state, True)
+            if math.isnan(q_new_state):
+                print()
+            self.qtable.initialize_values(new_state, actions_in_new_state, q_new_state)
             target_q = reward + self.gamma * self.qtable.max(new_state, actions_in_new_state)
         
-        q_state_action = self.qtable.value(self.state, action, self.default_q)
+        q_state_action = self.qtable.value(self.state, action)
         q_state_action += self.alpha * (target_q - q_state_action)
         self.qtable.set(self.state, action, q_state_action)
         
@@ -161,23 +219,23 @@ class DynaQPlusAgentExperimental(object):
             pass
         elif self.model_option == 'transition+' or self.model_option == 'optimistic_transition+':
             assumed_r = 0.0 if self.model_option == 'transition+' else 1.0  # optimism: assumes reward 1!
-            # TODO: attention! what happens if the environment changes? adding or blocking an action
+            # TODO: attention! what happens if the environment changes (adding or blocking an action)?
             for a in actions_in_state:
                 if (state,a) in self.model: # if it has entry for one action (in state), it has for all
                     break
                 if a != action:
                     self.model[state,a] = (assumed_r, state, False, self.train_step)
         else:
-            raise Exception("Invalid option for model update: " + self.model_option)
+            raise Exception()
         
         # for all models
         self.model[state,action] = (reward, new_state, is_terminal, self.train_step)
-        reverse_action = Action.reverse(action)
-        # reverse actions: not very useful in tests
-        #if not is_terminal \
-        #        and reverse_action is not None \
-        #        and (new_state,reverse_action) not in self.model:
-        #    self.model[new_state,reverse_action] = (reward, state, False, self.train_step)
+        if self.reverse_action:
+            inv_action = Action.reverse(action)
+            if not is_terminal \
+                    and inv_action is not None \
+                    and (new_state, inv_action) not in self.model:
+                self.model[new_state,inv_action] = (reward, state, False, self.train_step)
 
     def planning(self, curr_timestep):
         # different implementations for random steps:
@@ -196,8 +254,10 @@ class DynaQPlusAgentExperimental(object):
                 target_q = r
             else:
                 target_q = r + self.gamma * self.qtable.max(next_s, None) 
-            q_s_a = self.qtable.value(s, a, self.default_q)
+            q_s_a = self.qtable.value(s, a, self.get_heuristic_q(s, False))
             q_s_a += self.alpha * (target_q - q_s_a)
+            if math.isnan(q_s_a):
+                print()
             self.qtable.set(s, a, q_s_a)
 
     def state_action_count_policy(self, state, actions_in_state):
@@ -254,3 +314,5 @@ class DynaQPlusAgentExperimental(object):
         action = rand.choice(min_actions)
         return action
 
+    #def dfs(self, state, actions_in_state):
+        #if self.state in self.visited_places:
