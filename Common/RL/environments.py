@@ -63,7 +63,7 @@ class SimulatedEnv:
         self.allow_all_actions = allow_all_actions
 
         if count_visits:
-            self.visits = np.zeros((len(self.map), len(self.map[0])), dtype=int)
+            self.visits = [[0 for x in range(len(self.map[0]))] for x in range(len(self.map))]
         else:
             self.visits = None
         self.count_visits = count_visits
@@ -101,7 +101,7 @@ class SimulatedEnv:
         else:
             self.observation = (0, 0, Direction.UP)
         if self.visits is not None:
-            self.visits[self.state[0], self.state[1]] += 1
+            self.visits[self.state[0]][self.state[1]] += 1
         return self.observation
 
     def _internal_apply_action(self, obs, action):
@@ -128,7 +128,7 @@ class SimulatedEnv:
     def reset_visits(self):
         old_visits = self.visits
         if self.count_visits:
-            self.visits = np.zeros((len(self.map), len(self.map[0])), dtype=int)
+            self.visits = [[0 for x in range(len(self.map[0]))] for x in range(len(self.map))]
         return old_visits
 
     def apply_action(self, action):
@@ -142,7 +142,7 @@ class SimulatedEnv:
             self.state = new_state
             self.observation = self._internal_apply_action(self.observation, action)
             if self.visits is not None and action == Action.FRONT:
-                self.visits[new_state[0], new_state[1]] += 1
+                self.visits[new_state[0]][new_state[1]] += 1
         elif self.allow_all_actions:
             # invalid moves: don't change self.state and self.observation
             new_state = self.state
@@ -167,13 +167,12 @@ class SimulatedEnv:
         return self.observation, reward, is_terminal
 
 
-
 class Ev3GridEnv:
     '''
     An environment that interfaces to a real EV3 robot that physically executes the actions.
     The 'robot' parameter should be one of the classes from BotHarware module.
     '''
-    def __init__(self, robot, count_visits=False, reward_option='goal'):
+    def __init__(self, robot, count_visits=False, reward_option='goal', wait_every_step=0):
         self.robot = robot
         # Here, the 'transition' is the relative view of the agent
         # Column and row are always assumed to be 0 in the start of an episode
@@ -200,6 +199,8 @@ class Ev3GridEnv:
         self.actions = list(Action)
         self.actions_no_front = list(Action)
         self.actions_no_front.remove(Action.FRONT)
+        self.wait_every_step = wait_every_step
+
         self.step = self.apply_action # another name for the function (similar to the name used in gym)
 
     def all_actions(self):
@@ -221,7 +222,8 @@ class Ev3GridEnv:
         while not self.robot.brickButton.any():
             pass
         self.robot.speaker.beep()
-        time.sleep(2)
+        if self.wait_every_step:
+            time.sleep(self.wait_every_step)
         
         self.robot.resetOrientation()
         self.state = self.initial_state 
@@ -284,7 +286,10 @@ class Ev3GridEnv:
             # don't change self.state but store it in new_state to return it
             print("Prohibited action")
             new_state = self.state
-        
+       
+        if self.wait_every_step:
+            time.sleep(self.wait_every_step)
+       
         arrived = self._check_goal()
         reward = self.STEP_REWARD
         if arrived:
@@ -301,9 +306,9 @@ class Ev3GridEnv:
             rmax = max(rows)
             cmin = min(cols)
             cmax = max(cols)
-            new_visits = np.zeros((rmax-rmin+1, cmax-cmin+1), dtype=int)
+            new_visits = [[0 for x in range(cmax-cmin+1)] for x in range(rmax-rmin+1)] 
             for r, c in self.visits.keys():
-                new_visits[r-rmin, c-cmin] = self.visits[(r,c)]
+                new_visits[r-rmin][c-cmin] = self.visits[(r,c)]
             return new_visits
         else:
             return None

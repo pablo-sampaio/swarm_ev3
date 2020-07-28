@@ -1,8 +1,12 @@
 
 import random as rand
 
-from RL.agents import DynaQPlusAgent
+from RL.agents import DynaQPlusAgentExperimental
 from RL.environments import Ev3GridEnv, _DummyBot
+
+def print_visits(visits):
+    for row in visits:
+        print(row)
 
 
 ########### MAIN ############
@@ -10,14 +14,14 @@ from RL.environments import Ev3GridEnv, _DummyBot
 rand.seed(21)
 
 robot=_DummyBot()
-env = Ev3GridEnv(robot, count_visits=True, reward_option='step_cost')
-agent1 = DynaQPlusAgent(planning_steps=5, kappa=0.0, model_option='transition+', default_q=1.0)
-#agent1 = DynaQPlusAgent(planning_steps=5, kappa=0.0, model_option='optimistic_transition+')
+env = Ev3GridEnv(robot, count_visits=True, reward_option='step_cost', wait_every_step=0)
+agent1 = DynaQPlusAgentExperimental(planning_steps=5, kappa=0.0, model_option='transition+', default_q=1.0)
+#agent1 = DynaQPlusAgentExperimental(planning_steps=5, kappa=0.0, model_option='optimistic_transition+')
 
-agent1.full_train(env, max_episodes=20)
+agent1.full_train(env, max_episodes=5)
 
 print(env.visits)
-#print(env.get_visits_with_nonnegative_pos())
+print_visits(env.get_visits_with_nonnegative_pos())
 print(agent1.train_step)
 
 # SEM REVERSAO / 5 plan_steps

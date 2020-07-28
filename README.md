@@ -2,7 +2,7 @@
 
 This repository contains a set of projects that use **Lego Mindstorms EV3** robotic plataform to test algorithms to control multi-robots (multi-agents) in collective tasks. The algorithms assume that the robots/agents are limited in their computational resources and sensors capabilities. 
 
-Most algorithms are designed for multiple agents, to run with pottentially thousands, although never tested in more than a few. (An even simpler robotic plataform could run the same algorithms, and EV3 was use to be more ready-to-use).
+Most algorithms are designed for multiple agents, to run with pottentially thousands, although never tested in more than a few. (The algorithms could be run in much simpler robotic platforms, but EV3 was used because it is more ready to use).
 
 ## Technical Details
 

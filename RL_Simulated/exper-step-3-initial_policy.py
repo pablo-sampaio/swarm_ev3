@@ -5,7 +5,7 @@ import experiment_util
 import sys
 
 #sys.path.append("../Common")
-from RL.agents import DynaQPlusAgent
+from RL.agents import DynaQPlusAgentExperimental
 from RL.environments import SimulatedEnv
 
 def change_environment(env):
@@ -49,7 +49,7 @@ results_filename1 = os.path.basename(__file__) + "-epi.npy"
 results_filename2 = os.path.basename(__file__) + "-steps.npy"
 
 '''
-run_episodes(SimulatedEnv, DynaQPlusAgent, 
+run_episodes(SimulatedEnv, DynaQPlusAgentExperimental, 
     env_parameters, agent_parameters, experiment_parameters,
     'initial_policy', 
     results_filename1)
@@ -58,7 +58,7 @@ print(results_filename1, "saved.")
 #'''
 
 '''
-run_num_steps(SimulatedEnv, DynaQPlusAgent,
+run_num_steps(SimulatedEnv, DynaQPlusAgentExperimental,
     env_parameters, agent_parameters, experiment_parameters,
     'initial_policy', 
     results_filename2)

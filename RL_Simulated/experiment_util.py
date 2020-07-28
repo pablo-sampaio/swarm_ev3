@@ -139,8 +139,10 @@ def run_num_steps(EnvClass, AgentClass,
             # removing "-1" only here causes infinite loop
             while num_steps < num_max_steps-1 :
                 if count_visits:
-                   # this is the initial state of an episode (not returned by train_step)
-                    state = state_to_int(env, agent.state)
+                    # directly reset the environment (optional), to get the start state
+                    # because it is never returned by train_step
+                    state = agent.reset_env() 
+                    state = state_to_int(env, state)
                     if num_steps < step_to_change_env: 
                         state_visits_before_change[idx][run][state] += 1
                     else:
@@ -167,10 +169,10 @@ def run_num_steps(EnvClass, AgentClass,
                         else:
                             state_visits_after_change[idx][run][state] += 1
                     
-                    if is_terminal:
+                    #if is_terminal:
                         # reset is done automatically in "step()", but we did it explicitly here to be able 
                         # to read "agent.state" at the start of the outer loop
-                        agent.reset_env()
+                        #agent.reset_env()
 
     if count_visits:
         log_data['state_visits_before'] = state_visits_before_change

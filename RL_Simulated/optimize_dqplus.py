@@ -5,7 +5,7 @@ import optuna
 
 import random as rand
 from RL.environments import SimulatedEnv
-from RL.agents import DynaQPlusAgent
+from RL.agents import DynaQPlusAgentExperimental
 
 from util import play_episodes
 
@@ -26,7 +26,7 @@ def train_static_env(trial):
         kappa = 0.0
     model_update = trial.suggest_categorical('model_update', ['transition', 'transition+', 'optimistic_transition+']) # 'all' was not considered -- requires too much previous knowledge
 
-    agent = DynaQPlusAgent(alpha=alpha, planning_steps=plan_steps, kappa=kappa, model_option=model_update)
+    agent = DynaQPlusAgentExperimental(alpha=alpha, planning_steps=plan_steps, kappa=kappa, model_option=model_update)
 
     print()
     print(f"TRIAL (sta): plan_steps={plan_steps}, alpha={alpha}, kappa={kappa}, model_option={model_update}")
@@ -54,7 +54,7 @@ def train_dynamic_env(trial):
         kappa = 0.0
     model_update = trial.suggest_categorical('model_option', ['transition', 'transition+', 'optimistic_transition+'])  # 'all' not considered (see comment above)
 
-    agent = DynaQPlusAgent(alpha=alpha, planning_steps=plan_steps, kappa=kappa, model_option=model_update)
+    agent = DynaQPlusAgentExperimental(alpha=alpha, planning_steps=plan_steps, kappa=kappa, model_option=model_update)
 
     print()
     print(f"TRIAL (dyn): plan_steps={plan_steps}, alpha={alpha}, kappa={kappa}, model_option={model_update}")

@@ -5,7 +5,7 @@ import experiment_util
 import sys
 
 #sys.path.append("../Common")
-from RL.agents import DynaQPlusAgent
+from RL.agents import DynaQPlusAgentExperimental
 from RL.environments import SimulatedEnv
 
 def change_environment(env):
@@ -46,15 +46,15 @@ agent_parameters = {
     "alpha" : 0.85,
     "planning_steps" : 50,
     "kappa" : 0.007,   #0.0,                   # To behave as Dyna-Q
-    "model_option" : ['all'], #'transition', 'transition+', 'optimistic_transition+'],
+    "model_option" : ['transition', 'transition+', 'optimistic_transition+', 'all'],
     "default_q" : 0.0,
 }
 
 results_filename1 = os.path.basename(__file__) + "-epi.npy"
 results_filename2 = os.path.basename(__file__) + "-steps.npy"
 
-'''
-run_episodes(SimulatedEnv, DynaQPlusAgent, 
+#'''
+run_episodes(SimulatedEnv, DynaQPlusAgentExperimental, 
     env_parameters, agent_parameters, experiment_parameters,
     'model_option', 
     results_filename1)
@@ -63,7 +63,7 @@ print(results_filename1, "saved.")
 #'''
 
 #'''
-run_num_steps(SimulatedEnv, DynaQPlusAgent,
+run_num_steps(SimulatedEnv, DynaQPlusAgentExperimental,
     env_parameters, agent_parameters, experiment_parameters,
     'model_option', 
     results_filename2)

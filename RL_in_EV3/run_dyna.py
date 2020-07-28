@@ -18,7 +18,7 @@ if OUTPUT_TO_FILE:
 #robot = _DummyBot()
 robot = EducatorBase()
 
-env = Ev3GridEnv(robot=robot, count_visits=True)
+env = Ev3GridEnv(robot=robot, count_visits=True, wait_every_step=True)
 agent1 = DynaQPlusAgent(planning_steps=10, kappa=0.0)
 
 rand.seed(23)
@@ -34,10 +34,10 @@ for epi in range(NUM_EPISODES):
     while not terminal:
         a, r, s, terminal = agent1.step_train()
         print("STEP: action =", a, "/ state =", s)
-        time.sleep(1.5)
+        #time.sleep(1.5)
 
 print(env.visits)
-#print(env.get_visits_with_nonnegative_pos())
+print(env.get_visits_with_nonnegative_pos())
 print(agent1.train_step)
 
 if OUTPUT_TO_FILE:
