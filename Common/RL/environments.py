@@ -81,7 +81,7 @@ class SimulatedEnv:
         return self.actionset
     
     def curr_actions(self):
-        assert self.state is not None, "Not in a state - reset the environment"
+        assert self.state is not None, "Invalid state - reset the environment"
         if self.allow_all_actions:
             return self.actionset
         state_ahead = self._internal_apply_action(self.state, Action.FRONT) 

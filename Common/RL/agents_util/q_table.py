@@ -11,12 +11,7 @@ except AttributeError:
         return l
     rand.choices = _choices
 
-'''
-A tabular Q that stores values for pairs (s,a) and that can be progressively filled.
-Although may seem awkward, this class was designed carefully to behave as expected 
-with the DynaQ+, specially because of its use with varying sets of actions in planning. 
-Be carefaul if you want to change.
-'''
+
 class TabularQ(object):
     def __init__(self, all_actions):
         self.q = {}  # dictionary for pairs (s,a)
@@ -42,7 +37,7 @@ class TabularQ(object):
             else:
                 # remove entries for invalid actions, added during planning 
                 # Q: why not set to -inf? R: to prevent it to be drawn during planning 
-                self.q.pop(s,a)
+                 self.q.pop((s,a))
 
     def argmax(self, s, actions_in_s):
         ties = []

@@ -9,10 +9,11 @@ from RL.agents import DynaQPlusAgentExperimental
 
 from util import play_episodes
 
-# FIXED PARAMETERS OF THE ENVIRONMENT/AGENT 
-REWARD_OPTION = 'step_cost'
-DYNAMIC_ENV = False
-USE_KAPPA = False   # if True, it is Dyna-Q+; else, it is Dyna-Q
+# PARAMETERS OF THE ENVIRONMENT/AGENT 
+REWARD_OPTION = 'goal'
+DYNAMIC_ENV = True
+USE_KAPPA = True   # if True, it is Dyna-Q+; else, it is Dyna-Q
+
 
 # used only in static experiments
 ENV = SimulatedEnv(reward_option=REWARD_OPTION, allow_all_actions=False)
@@ -102,18 +103,23 @@ if __name__ == '__main__':
         "with reward option", REWARD_OPTION)
 
     '''
-    DYNA-Q STEP_COST / ESTATICO:
+    DYNA-Q / STEP_COST / ESTATICO:
     Current best value is 2420.0 with parameters: 
     {'alpha': 0.8596454428029752, 'model_update': 'transition', 'planning_steps': 70}.
     FINISHED results for Dyna-Q static environment with reward option step_cost
 
-    DYNA-Q-PLUS STEP_COST / ESTATICO:
+    DYNA-Q-PLUS / STEP_COST / ESTATICO:
     Current best value is 2397.0 with parameters: 
     {'alpha': 0.837684237749518, 'kappa': 0.004700042668218965, 'model_update': 'transition', 'planning_steps': 68}.
     FINISHED results for static environment with reward option step_cost
 
-    DYNA-Q-PLUS STEP_COST / DINAMICO:
+    DYNA-Q-PLUS / STEP_COST / DINAMICO:
     Current best value is -388.0 with parameters: 
     {'alpha': 0.899265696824145, 'kappa': 0.007269805815171486, 'model_option': 'transition', 'planning_steps': 77}.
     FINISHED results for dynamic environment with reward option step_cost
+
+    DYNA-Q-PLUS / GOAL / DINAMICO:
+    Current best value is -359.0 with parameters: 
+    {'alpha': 0.7003095900092939, 'kappa': 0.00025703042780927075, 'model_option': 'transition+', 'planning_steps': 32}.
+    FINISHED results for DynaQ-PLUS dynamic environment with reward option goal
     '''
