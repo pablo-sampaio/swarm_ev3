@@ -18,8 +18,8 @@ Most algorithms are designed for multiple agents, to run with pottentially thous
 - *BotHardware* - Functions to control diverse bases mounted with EV3 (45444 or 31313).
 - *PID* - Very simple PID controller.
 - *LinesNavigation* - Provides functions to detect and walk on lines interlinked in arbitrary ways. Don't need to be a grid, but you need to mark, somehow the crossings on lines (e.g. a color, or a RFID tag).
-- *RfidReader* - A module to communicate with the RFID MFRC522, interfaced by the Arduino. To work, the Arduino *must* run the driver in the corresponding project.
-- *RL* - Reinforcement learning environments and agents (algorithms). A simple simulated environment in a grid world is provided together with an environment used as interface to to control the EV3 in a setting that mimics the simulated environment. The RL agents can be applied seamlessly in both.
+- *RfidReader* - A module to communicate with the RFID MFRC522, interfaced by the Arduino. To work, the Arduino *must* run the driver developed in the RFID_Arduino_Driver project.
+- *RL* - Reinforcement learning environments and agents (algorithms). A simple simulated environment in a grid world is provided together with another "environment" used as interface  to control the EV3 in a real setting that mimics a grid (with square cells). The RL agents can be applied seamlessly in both.
 
 **Graph_Exploration** - Implements ECEP and  NCEP algorithms.
 
@@ -33,9 +33,11 @@ Arduino. The code defines a communication protocol through the serial port that 
 
 ## Other Informations
 
-These projects were developed by professor Pablo A. Sampaio, with undergrad students. Some of the algorithms were published in conferences.
+These projects were developed by professor Pablo A. Sampaio, with undergraduate students. Some of the algorithms were published in conferences.
 
-**TODO**: add references here
+## References
+
+P. Azevedo Sampaio and J. Washington Pereira, ["Multi-Robot Navigation and Exploration in Graphs with Entrance-Dependent Identification of the Edges,"](https://ieeexplore.ieee.org/document/9018598) 2019 Latin American Robotics Symposium (LARS), 2019 Brazilian Symposium on Robotics (SBR) and 2019 Workshop on Robotics in Education (WRE), Rio Grande, Brazil, 2019, pp. 323-328, doi: 10.1109/LARS-SBR-WRE48964.2019.00063.
 
 --
 
