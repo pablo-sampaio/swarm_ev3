@@ -5,6 +5,7 @@ from time import *
 import platform
 
 from BotHardware import EducatorBot
+
 from RfidReader import RfidSerialThread
 from LinesNavigation import *
 

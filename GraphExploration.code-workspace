@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "./Common"
+		},
+		{
+			"path": "GraphExploration"
+		}
+	],
+	"settings": {
+		"debug.openDebug": "neverOpen",
+		"python.pythonPath": "/usr/bin/python3.6"
+	},
+	"extensions": {
+		"recommendations": [
+			"ev3dev.ev3dev-browser"
+		]
+	}
+}

@@ -2,19 +2,28 @@
 from Exploration import *
 
 
+
 def TEST1():
+    ''' Some tests with differente representations of NavigationData 
+    '''
     for example in [b"[AABBCCDD,11223344,33224455]45",
                b"[AABBCCDD,11223344,33224455]37(AABBCCDD,3)"]:
         print("EXAMPLE OF BYTES:", example)
         navdata = NavigationData()
         navdata.parseFrom(example)
 
-        print("-", navdata)
-        print("-", navdata.toBytes())
-        print("-", navdata.toBytes().hex())
+        representation = str(navdata)
+        print("- print:      ", representation, ", type:", type(representation), ", len:", len(representation))
+        representation = navdata.toBytes()
+        print("- toBytes:    ", representation, ", type:", type(representation), ", len:", len(representation))
+        representation = navdata.toBytes().hex()
+        print("- toBytes.hex:", representation, ", type:", type(representation), ", len:", len(representation))
 
 
 def TEST2():
+    ''' Tests ExplorationManagerDfs3Simpl by simulating navigation in a graph
+    only to confirm if the next visits are properly indicated by this class 
+    '''
     exp = ExplorationManagerDfs3Simpl() #ExplorationManagerDfs3()
 
     x = NavigationData()
@@ -54,4 +63,5 @@ def TEST2():
     print("proximo:", exp.nextNode('x', x))
 
 
-TEST2()
+TEST1()
+#TEST2()

@@ -1,0 +1,22 @@
+
+Give detailed instruction on how to prepare an EV3
+
+1. Download stretch or jessie / flash
+
+2. Boot / connect USB cable
+
+3. Net configuration on EV3 / PC
+
+4. VS Code / plugin 
+
+
+Problem in Ubuntu 18.04: The PC would show "Ethernet connecting" (never "Ethernet connected"), 
+then dropped after few minutes. I had to manually ask the PC to connect again.
+
+I solved by changing a few things - I don't know which one worked:
+   - EV3: Wireless and Networks / All Network Connections / Wired / 
+        Connect automatically - disable / IPV4 / Change / Load linux defauls (probably could set any config here)
+   - PC: Settings / Network / you should see the option "USB Ethernet"
+        IPV4 manual - in "Address" copy settings from EV3, let the other in Automatic /
+        IPV6 disabled
+   - Everytime you restart (PC or EV3): in EV3: go all the way to "Wired" menu, click "Connect"

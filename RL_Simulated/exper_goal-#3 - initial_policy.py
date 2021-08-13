@@ -41,7 +41,7 @@ agent_parameters = {
 results_filename1 = os.path.basename(__file__) + "-epi.npy"
 results_filename2 = os.path.basename(__file__) + "-steps.npy"
 
-#'''
+'''
 run_episodes(SimulatedEnv, DynaQPlusAgentExperimental, 
     env_parameters, agent_parameters, experiment_parameters,
     'initial_policy', 
@@ -50,7 +50,7 @@ run_episodes(SimulatedEnv, DynaQPlusAgentExperimental,
 print(results_filename1, "saved.")
 #'''
 
-#'''
+'''
 run_num_steps(SimulatedEnv, DynaQPlusAgentExperimental,
     env_parameters, agent_parameters, experiment_parameters,
     'initial_policy', 

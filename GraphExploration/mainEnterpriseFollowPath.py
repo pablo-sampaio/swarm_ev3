@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # This programa is a tested implementation of NCEP in a EV3, assembled 
-# with the "Enterprise"shape (adapted), published in SBR/LARS 2019.
+# with the "Enterprise" shape (adapted), published in SBR/LARS 2019.
 
 import platform
 import sys

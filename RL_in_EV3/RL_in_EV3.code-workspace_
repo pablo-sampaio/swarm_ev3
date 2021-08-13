@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../Common"
+		}
+	],
+	"settings": {
+		"debug.openDebug": "neverOpen",
+		"python.pythonPath": "/usr/bin/python3.6"
+	},
+	"extensions": {
+		"recommendations": [
+			"dlech.ev3dev-browser"
+		]
+	}
+}

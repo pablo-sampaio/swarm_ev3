@@ -1,0 +1,15 @@
+
+( ) Testar rodar script com o novo workspace / apagar antigo
+( ) Mover pasta basica de RL
+( ) Criar workspace proprio para os scripts da pasta Common (testes gerais)
+( ) Mudar cartao -- chamar arquivo de leiame.txt
+
+LONGO PRAZO
+
+( ) Seguidor de linha "envenenado"
+    * v1: ajustar pesos do PID (vels fixas?) com otimizador
+    * v2: usar RL
+    *     historico de observacoes
+    *     velocidade como acao
+
+( ) Testar nova versão do algoritmo de exploration para o Educator

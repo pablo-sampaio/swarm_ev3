@@ -9,7 +9,7 @@
 static byte blockBuffer[18] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 static byte readWriteTrials = 5;
 
-//#define SHOW_DEBUG_MESSAGES 1 //comment out this line to enable messages
+//#define SHOW_DEBUG_MESSAGES 1 //uncomment this line to enable messages
 
 #ifdef SHOW_DEBUG_MESSAGES
   #define dbgPrintln(str) Serial.println(str)

@@ -3,8 +3,11 @@ To run this project, first your EV3 must be connected to the device,
 using the ev3dev-browser (VS Code extesion).
 
 Tested with:
-- **ev3dev-browser 1.1.0 + ev3dev-stretch**
+- **ev3dev-browser 1.1.0 and 1.2.0 + ev3dev-stretch**
 - **ev3dev-browser 0.8.1 + ev3dev-jessie**
+
+(To know the version you have, run this in the SSH console connected 
+to the brick: "more /etc/ev3dev-release").
 
 
 ## TO CONFIGURE 
@@ -16,13 +19,13 @@ Use this on the first time you run the project.
 1. Run 
    - chmod +x ~/RL_in_EV3/setup_paths
 1. Run 
-   - ~/RL_in_EV3/setup_libs
-1. Run the file (see below)
+   - ~/RL_in_EV3/setup_paths
+1. Run the python script you want (see below)
 
 Attention: if you change the names of directories in "Common" folder or if you create new, you will have to adjust the setup script.
 
 
-## TO RUN A FILE 
+## TO RUN A PYTHON SCRIPT 
 Use this, if you haven't changed since last donwload to EV3 or 
 after changes made to "RL_in_EV3" folder only.
 
@@ -36,4 +39,5 @@ after changes made to "RL_in_EV3" folder only.
 ## EVERYTIME YOU CHANGE FILES IN THE **COMMON** FOLDER
 
 1. On the "ev3dev Device Browser", click on "Dowload workspace"
-1. Run the file you want using the procedure above
+1. Run the file you want using the procedure above (don't need to configure again)
+

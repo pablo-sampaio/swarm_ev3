@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "./RL_in_EV3"
+		},
+		{
+			"path": "./Common"
+		}
+	],
+	"settings": {
+		"debug.openDebug": "neverOpen",
+		"python.pythonPath": "/usr/bin/python3.6"
+	},
+	"extensions": {
+		"recommendations": [
+			"ev3dev.ev3dev-browser"
+		]
+	}
+}

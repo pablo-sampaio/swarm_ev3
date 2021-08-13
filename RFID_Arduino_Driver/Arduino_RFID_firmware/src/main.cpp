@@ -248,13 +248,13 @@ bool arrayEquals(byte* array1, byte* array2, int length) {
   return true;
 }
 
-bool detectNewTag(bool forceAnswer) {
+bool detectNewTag(bool alwaysAnswer) {
   bool newTagDetected = detectAndSelectMifareTag(&mfrc522) || detectAndSelectMifareTag(&mfrc522); //try 2x, at most
 
   if (newTagDetected) {
-    //there was no tag selected before, or a different one was now detected (OR if forced to answer)
+    //send the tag, if there was no tag selected before, or a different one was now detected (OR if forced to always answer)
     if (!tagSelected || !arrayEquals(mfrc522.uid.uidByte, tagUid, 4)
-          || forceAnswer) {
+          || alwaysAnswer) {
       Serial.print(F("(tag "));
       for (int i = 0; i < 4; i ++) {
         Serial.print(mfrc522.uid.uidByte[i], HEX);
@@ -263,13 +263,11 @@ bool detectNewTag(bool forceAnswer) {
       Serial.println(F(")"));  
     }
     tagSelected = true;
-    //timerToReleaseTag.restart();
     return true;
 
-  } else if (tagSelected || forceAnswer) {  //no new tag detected now, but there was a selected tag (OR if forced to answer)
+  } else if (tagSelected || alwaysAnswer) {  //send a message, if no new tag detected now, but there was a selected tag before (OR if forced to always answer)
     Serial.println(F("(tag not detected)"));
     unselectMifareTag(&mfrc522, true);
-    //timerToReleaseTag.stop(); //no timeout occurs anymore
     tagSelected = false;
 
   }
