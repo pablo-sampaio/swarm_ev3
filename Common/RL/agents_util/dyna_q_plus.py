@@ -111,8 +111,6 @@ class DynaQPlusAgent(object):
         
         return result
 
-    # Observacao: Ideia abandonada - 'transition++' - acrescenta todas as acoes para o new_state na primeira visita (e inicializa com todas do 
-    # estado inicial). Acrescenta pouco em relacao ao 'transition+' e o acrescimo nao parece util. Em testes, de fato, o desempenho foi similar.
     def update_model(self, state, action, reward, new_state, is_terminal):
         self.model[state,action] = (reward, new_state, is_terminal, self.train_step)
 
@@ -133,6 +131,7 @@ class DynaQPlusAgent(object):
                 target_q = r
             else:
                 target_q = r + self.gamma * self.qtable.max(next_s, None) 
+            
             q_s_a = self.qtable.value(s, a, self.default_q)
             q_s_a += self.alpha * (target_q - q_s_a)
             self.qtable.set(s, a, q_s_a)

@@ -2,13 +2,13 @@
 
 This repository contains a set of projects that use **Lego Mindstorms EV3** robotic plataform to test algorithms to control multi-robots (multi-agents) in collective tasks. The algorithms assume that the robots/agents are limited in their computational resources and sensors capabilities. 
 
-Most algorithms are designed for multiple agents, to run with pottentially thousands, although never tested in more than a few. (The algorithms could be run in much simpler robotic platforms, but EV3 was used because it is more ready to use).
+Most algorithms are designed for multiple agents, to run with pottentially thousands, although never tested in more than a few. (An even simpler robotic plataform could run the same algorithms, and EV3 was use to be more ready-to-use).
 
 ## Technical Details
 
 - **Languages**: *Python* (most of the code) and *C* (just the Arduino driver).
 - **EV3 Kit**: The code works with 45544 (mounted with the "Educator" base) or 31313 (mounted with the "Enterprise" base).
-- **Operating system** (EV3): [ev3dev](http://www.ev3dev.org/), version *jessie*.
+- **EV3 Operating system**: [ev3dev](http://www.ev3dev.org/), version *jessie*, loaded from a SD card.
 - **Other hardware pieces**: Some projects require an **Arduino** interfacing an RFID MFRC522, with the Arduino connected to the EV3 through the USB port. The C code for the Arduino is provided. 
 - **IDE**: All projects should open in *VS Code*. (Older PyCharm project settings may also be present, but it is not actively used).
 
@@ -19,7 +19,7 @@ Most algorithms are designed for multiple agents, to run with pottentially thous
 - *PID* - Very simple PID controller.
 - *LinesNavigation* - Provides functions to detect and walk on lines interlinked in arbitrary ways. Don't need to be a grid, but you need to mark, somehow the crossings on lines (e.g. a color, or a RFID tag).
 - *RfidReader* - A module to communicate with the RFID MFRC522, interfaced by the Arduino. To work, the Arduino *must* run the driver developed in the RFID_Arduino_Driver project.
-- *RL* - Reinforcement learning environments and agents (algorithms). A simple simulated environment in a grid world is provided together with another "environment" used as interface  to control the EV3 in a real setting that mimics a grid (with square cells). The RL agents can be applied seamlessly in both.
+- *RL* - Reinforcement learning environments and agents (algorithm Dyna-Q+ and some realtime search algorithms). A simple simulated environment in a grid world is provided together with another "environment" used as interface  to control the EV3 in a real setting that mimics a grid (with square cells). The RL agents can be applied seamlessly in both.
 
 **Graph_Exploration** - Implements ECEP and  NCEP algorithms.
 

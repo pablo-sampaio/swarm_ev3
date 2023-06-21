@@ -1,10 +1,8 @@
 
 from experiment_util import *
-import experiment_util
-
-import sys
-
+#import sys
 #sys.path.append("../Common")
+
 from RL.agents import DynaQPlusAgentExperimental
 from RL.environments import SimulatedEnv
 
@@ -48,9 +46,8 @@ run_episodes(SimulatedEnv, DynaQPlusAgentExperimental,
     results_filename1)
 
 print(results_filename1, "saved.")
-#'''
 
-#'''
+
 run_num_steps(SimulatedEnv, DynaQPlusAgentExperimental,
     env_parameters, agent_parameters, experiment_parameters,
     'default_q', 

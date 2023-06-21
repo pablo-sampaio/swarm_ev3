@@ -1,10 +1,9 @@
+'''
+Experiments initializing the q-table with optimistic values.
+'''
 
 from experiment_util import *
-import experiment_util
 
-import sys
-
-#sys.path.append("../Common")
 from RL.agents import DynaQPlusAgentExperimental
 from RL.environments import SimulatedEnv
 
@@ -34,22 +33,21 @@ agent_parameters = {
     "planning_steps" : 50,
     "kappa" : 0.0,                      # To behave as Dyna-Q
     "model_option" : 'transition',
-    "default_q" : [0.0, 0.5, 1.0] # List of values to test -- ALL are optimistic values
+    "default_q" : [0.0, 0.5, 1.0]       # List of values to test -- ALL are optimistic values
 }
 
 results_filename1 = os.path.basename(__file__) + "-epi.npy"
 results_filename2 = os.path.basename(__file__) + "-steps.npy"
 
-'''
+#'''
 run_episodes(SimulatedEnv, DynaQPlusAgentExperimental, 
     env_parameters, agent_parameters, experiment_parameters,
     'default_q', 
     results_filename1)
 
 print(results_filename1, "saved.")
-#'''
 
-'''
+
 run_num_steps(SimulatedEnv, DynaQPlusAgentExperimental,
     env_parameters, agent_parameters, experiment_parameters,
     'default_q', 

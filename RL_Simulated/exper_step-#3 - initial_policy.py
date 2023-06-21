@@ -1,10 +1,6 @@
 
 from experiment_util import *
-import experiment_util
 
-import sys
-
-#sys.path.append("../Common")
 from RL.agents import DynaQPlusAgentExperimental
 from RL.environments import SimulatedEnv
 
@@ -22,7 +18,7 @@ set_results_dir("results-stepcost") # from experiment_util
 # Experiment parameters
 experiment_parameters = {
     "num_runs" : 30,            # Number of times we run the experiment
-    "num_episodes" : 20,        # Number of episodes per experiment
+    "num_episodes" : 20,        # Number of episodes per experiment (for run_episodes())
     "num_max_steps" : 5000      # Number of steps (for run_num_steps())
 }
 
@@ -55,9 +51,8 @@ run_episodes(SimulatedEnv, DynaQPlusAgentExperimental,
     results_filename1)
 
 print(results_filename1, "saved.")
-#'''
 
-#'''
+
 run_num_steps(SimulatedEnv, DynaQPlusAgentExperimental,
     env_parameters, agent_parameters, experiment_parameters,
     'initial_policy', 

@@ -1,10 +1,16 @@
+'''
+This file runs experimentos with different "initial policies" for the agent using the "goal" reward option. 
+The initial policy is a policy used only in the first episode.
+
+The options we tested were:
+- epsilon-greedy: use the default policy of the agent
+- cell-count: the agents counts the number of visits to each cell of the map and chooses the cell with minimun number of visits
+- state-count: similar to the above, but it counts the state
+- state-action-count: similar to the above, but it counts the pairs (state,action)
+'''
 
 from experiment_util import *
-import experiment_util
 
-import sys
-
-#sys.path.append("../Common")
 from RL.agents import DynaQPlusAgentExperimental
 from RL.environments import SimulatedEnv
 
@@ -41,16 +47,15 @@ agent_parameters = {
 results_filename1 = os.path.basename(__file__) + "-epi.npy"
 results_filename2 = os.path.basename(__file__) + "-steps.npy"
 
-'''
+#'''
 run_episodes(SimulatedEnv, DynaQPlusAgentExperimental, 
     env_parameters, agent_parameters, experiment_parameters,
     'initial_policy', 
     results_filename1)
 
 print(results_filename1, "saved.")
-#'''
 
-'''
+
 run_num_steps(SimulatedEnv, DynaQPlusAgentExperimental,
     env_parameters, agent_parameters, experiment_parameters,
     'initial_policy', 
