@@ -1,0 +1,65 @@
+
+Give detailed instruction on how to prepare an EV3:
+
+1. Download stretch or jessie / flash
+
+2. Boot EV3 and connect USB cable from EV3 to PC
+
+3. On Windows, you may check in the "Device Manager" your EV3 recognized as "Remote NDIS Compatible Device"
+
+4. Settings on EV3:
+- Wireless and Networks
+- All Networks
+- Wired
+- Clicar em "Connect"
+- Espere aparecer IP
+
+5. Conectando no VS Code 
+- Clicar no "Explorer" (canto esquerdo, que oferece a visão dos arquivos do projeto)
+- Desça até o o painel com o nome da extensão "EV3DEV DEVICE BROWSER"
+- Click here to connect to a device
+- Escolher na lista, geralmente o nome é "ev3dev"
+- Você vai ver aparecer o nome "ev3dev" com uma bolinha verde, no painel da extensão
+- Você pode expandir e ver arquivos e informações
+- Clique com o botão direito e escolha "Open SSH Terminal"
+- Você pode usar comandos do linux
+- Se não der certo:
+  . se a versão for jessie, precisa usar a extensão 0.8.1 e precisa desinstalar a outra
+  . tente reiniciar o windows
+  . confira se não desconectou (sumiu o IP no topo da tela do EV3)
+
+6. "Send Project to Device"
+
+7. Para configurar a referência entre as pastas, faça isso apenas da 1a vez:
+cd ~
+chmod +x RL_in_EV3/setup_paths 
+robot@ev3dev:~$ RL_in_EV3/setup_paths 
+
+8. Você pode mandar executar a partir do terminal, com:
+python3 <nome_do_arquivo>
+
+
+----
+
+## Troubleshooting
+
+###Problem in Ubuntu 18.04: The PC would show "Ethernet connecting" and never show "Ethernet connected" 
+then dropped after few minutes. I had to manually ask the PC to connect again.
+
+I solved by changing a few things - I don't know which one worked:
+   - EV3: Wireless and Networks / All Network Connections / Wired / 
+        Connect automatically - disable / IPV4 / Change / Load linux defauls (probably could set any config here)
+   - PC: Settings / Network / you should see the option "USB Ethernet"
+        IPV4 manual - in "Address" copy settings from EV3, let the other in Automatic /
+        IPV6 disabled
+   - Everytime you restart (PC or EV3): in EV3: go all the way to "Wired" menu, click "Connect"
+
+
+EV3 menu (in the display) froze:
+Se travar, conecte o cabo, abra o terminal SSH e mande este comando
+
+sudo shutdown -h now
+password: maker
+
+ev3dev-browser
+v0.8.1

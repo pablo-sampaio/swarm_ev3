@@ -13,3 +13,4 @@ LONGO PRAZO
     *     velocidade como acao
 
 ( ) Testar nova versão do algoritmo de exploration para o Educator
+

@@ -8,6 +8,7 @@ class _EnterpriseBase(AbstractHardwareBase):
     ''' Class to control the Entreprise Robot, model by Seshan brothers made with LEGO EV3 Home Edition.
     '''
     def __init__(self):
+        #__init__(self, port_motor_l, port_motor_r, port_light_l, port_light_r, degreesPerCm):
         AbstractHardwareBase.__init__(self, 'outD', 'outA', 'in1', 'in4', (8.0 * 360 / 106.8))  # from experiment: in 8 turns, almost 107 cm
         self.pid_controller = PID(3.0, 0.2, 1.0)  # usa valores mais adequados ao Enterprise
                                                   # opcoes passadas: (6,0,1), point: 20
@@ -17,16 +18,16 @@ class _EnterpriseBase(AbstractHardwareBase):
         self.leftMotorZero = self.leftMotor.position
         self.rightMotorZero = self.rightMotor.position
 
-        #self.irSensor = InfraredSensor()
-        #assert self.irSensor.connected, "Connect an infrared distance sensor to any sensor port"
-        #self.irSensor.mode = 'IR-PROX'
+        self.irSensor = InfraredSensor()
+        if self.irSensor.connected:
+            self.irSensor.mode = 'IR-PROX'
         #self.distSensor = UltrasonicSensor()
         #self.distSensor.mode = 'US-DIST-CM'  # attention: it measures milimeters indeed
 
     def getDistanceAhead(self):
-        #if self.irSensor.connected:
-        #    return self.irSensor.value() # TODO: convert to cm
-        #else:
+        if self.irSensor.connected:
+            return self.irSensor.value() # TODO: convert to cm
+        #elif self.distSensor.connected:
         #    return None
         #return self.distSensor.value() / 10
         return None

@@ -4,12 +4,12 @@ from ev3dev.ev3 import Button, Sound
 from time import *
 import platform
 
-from BotHardware import EnterpriseBot
+from BotHardware import EnterpriseBase
 from RfidReader import RfidSerialThread
 from LinesNavigation import *
 
 
-robot = EnterpriseBot()
+robot = EnterpriseBase()
 
 
 def rotate(list, index): #not used yet
@@ -136,7 +136,8 @@ def TEST7():
 ### ENTRY POINT
 
 try:
-    TEST7()
+    #TEST7()
+    TEST6()
 
 except:
     print("Error. More info:")
