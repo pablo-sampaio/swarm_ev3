@@ -1,6 +1,7 @@
 
 ( ) Testar rodar script com o novo workspace / apagar antigo
-( ) Mover pasta basica de RL
+( ) Mover pasta basica de RL para nível superior
+( ) Mover o EV3 env para a pasta específica de RL_in_EV3 ?
 ( ) Criar workspace proprio para os scripts da pasta Common (testes gerais)
 ( ) Mudar cartao -- chamar arquivo de leiame.txt
 
@@ -13,4 +14,8 @@ LONGO PRAZO
     *     velocidade como acao
 
 ( ) Testar nova versão do algoritmo de exploration para o Educator
+
+( ) Still using version 1 of the python-ev3dev library
+    # To migrate, see: https://python-ev3dev.readthedocs.io/en/ev3dev-stretch/upgrading-to-stretch.html
+    # However, not sure if it is worthwile
 

@@ -4,13 +4,13 @@ from ev3dev.ev3 import Button, Sound
 from time import *
 import platform
 
-from BotHardware import EducatorBot
+from BotHardware import EducatorBase
 
 from RfidReader import RfidSerialThread
 from LinesNavigation import *
 
 
-robot = EducatorBot()
+robot = EducatorBase()
 
 
 def rotate(list, index): #not used yet

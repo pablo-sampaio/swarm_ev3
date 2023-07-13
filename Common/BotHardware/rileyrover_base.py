@@ -4,16 +4,14 @@ from time import sleep
 from ev3dev.ev3 import *
 
 
-class _EnterpriseBase(AbstractHardwareBase):
-    ''' Class to control the Entreprise Robot, model by Seshan brothers made with LEGO EV3 Home Edition.
+class _RileyRoverBase(AbstractHardwareBase):
+    ''' Class to control the Riley Rover base, adapted with the wheels of the LEGO EV3 Home Edition and a caster wheel.
     '''
     def __init__(self):
-        AbstractHardwareBase.__init__(self, 'outD', 'outA', 'in1', 'in4', (8.0 * 360 / 106.8), pid_params=(3.0, 0.2, 1.0))  
-        # 'degreesPerCm' - from experiment: in 8 turns, almost 107 cm
-        # 'pid_params' - values that work well on Enterprise
-        
+        #__init__(self, port_motor_l, port_motor_r, port_light_l, port_light_r, degreesPerCm):
+        AbstractHardwareBase.__init__(self, 'outD', 'outA', 'in1', 'in4', (8.0 * 360 / 106.8), pid_params=(3.0, 0.2, 1.0))
         self.pid_controller.setPoint(15)
-        self.WHEEL_FACTOR = 2.290  # bom entre 2.275 e 2.290
+        self.WHEEL_FACTOR = 3.05  # entre 3.0 (bom) e 3.1 (passa)
 
         self.leftMotorZero = self.leftMotor.position
         self.rightMotorZero = self.rightMotor.position

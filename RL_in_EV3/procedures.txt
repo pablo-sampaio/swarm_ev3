@@ -1,43 +1,75 @@
 
 Give detailed instruction on how to prepare an EV3:
 
-1. Download stretch or jessie / flash
+1. Download EV3dev stretch version and flash it to a SD card
+   - Get ev3dev here: https://www.ev3dev.org/docs/getting-started/
+   - A flash utility: https://rufus.ie/pt_BR/
 
-2. Boot EV3 and connect USB cable from EV3 to PC
+2. Boot EV3 with the SD card and use a USB cable to connect EV3 to PC
 
-3. On Windows, you may check in the "Device Manager" your EV3 recognized as "Remote NDIS Compatible Device"
+3. On Windows, you may check in the "Device Manager" if your EV3 was recognized as "Remote NDIS Compatible Device"
 
-4. Settings on EV3:
+4. Connect your EV3 to your PC with one of these options:
+
+4.1 (Mostly, first-time only) Bluetooth:
+https://www.ev3dev.org/docs/tutorials/connecting-to-the-internet-via-bluetooth/
+- In step 7, set "Connect automatically"
+
+4.2 With a USB cable
 - Wireless and Networks
 - All Networks
 - Wired
 - Clicar em "Connect"
 - Espere aparecer IP
 
-5. Conectando no VS Code 
+5. Instalar extensão ev3dev-browser
+
+6. Conectando no VS Code 
 - Clicar no "Explorer" (canto esquerdo, que oferece a visão dos arquivos do projeto)
 - Desça até o o painel com o nome da extensão "EV3DEV DEVICE BROWSER"
 - Click here to connect to a device
-- Escolher na lista, geralmente o nome é "ev3dev"
+- Escolher na lista, geralmente o nome é "ev3dev". Se a conexão for por bluetooth, você verá um comentário indicando.
 - Você vai ver aparecer o nome "ev3dev" com uma bolinha verde, no painel da extensão
-- Você pode expandir e ver arquivos e informações
+
+6.1 - Se der certo:
+- Você pode expandir o nome "eve3dev" e ver arquivos e informações
 - Clique com o botão direito e escolha "Open SSH Terminal"
 - Você pode usar comandos do linux
-- Se não der certo:
-  . se a versão for jessie, precisa usar a extensão 0.8.1 e precisa desinstalar a outra
+
+6.2 - Se não der certo:
   . tente reiniciar o windows
-  . confira se não desconectou (sumiu o IP no topo da tela do EV3)
+  . confira se não desconectou, por alguma falha no cabo (sumiu o IP no topo da tela do EV3)
 
-6. "Send Project to Device"
+7. "Send Project to Device"
 
-7. Para configurar a referência entre as pastas, faça isso apenas da 1a vez:
-cd ~
-chmod +x RL_in_EV3/setup_paths 
-robot@ev3dev:~$ RL_in_EV3/setup_paths 
+8. (First-time only) Para configurar a referência entre as pastas, faça isso apenas da 1a vez:
+- In "EV3DEV DEVICE BROWSER" click on "Send workspace to device" (top right of the panel)
+  - this may be rather slow with Bluetooth connection
+- Right-click on "ev3dev" then choose "Open SSH Terminal"
+- Type
+> cd ~
+> chmod +x RL_in_EV3/setup_paths 
+> ./RL_in_EV3/setup_paths 
 
-8. Você pode mandar executar a partir do terminal, com:
-python3 <nome_do_arquivo>
+8.1 - If needed, at any moment, know that you are logged in ev3dev OS as this user:
+   - login: "robot"
+   - password: "maker"
 
+9. Excutando:
+9.1 - Executar Ctrl+F5
+  - it will download the whole project to the EV3, then run the file
+
+9.2 - Você pode mandar executar a partir do terminal, com:
+> python3 <nome_do_arquivo>
+- beforehand, remember to save the open files, then download the latest version of the project
+
+9.3 - E a partir do menu do EV3 ??
+
+10. Para melhor editar, instale o pacote no PC
+> pip install python-ev3dev
+> pip install python-ev3dev2
+
+(ver no futuro: https://pypi.org/project/ev3dev2simulator/)
 
 ----
 
@@ -58,8 +90,11 @@ I solved by changing a few things - I don't know which one worked:
 EV3 menu (in the display) froze:
 Se travar, conecte o cabo, abra o terminal SSH e mande este comando
 
+(sudo poweroff ??)
+
 sudo shutdown -h now
 password: maker
 
+??
 ev3dev-browser
 v0.8.1

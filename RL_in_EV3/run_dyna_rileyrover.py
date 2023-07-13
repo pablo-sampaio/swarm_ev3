@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
-from RL.environments import Ev3GridEnv, _DummyBot
 from RL.agents import DynaQPlusAgent
+from BotHardware import RileyRoverBase
+from ev3_environments import RileyRoverGridEnv
 
-from BotHardware import EducatorBase
-
-import time
 import random as rand
 import sys
 
@@ -16,9 +14,9 @@ if OUTPUT_TO_FILE:
     sys.stdout = open("output.txt", "w")
 
 #robot = _DummyBot()
-robot = EducatorBase()
+robot = RileyRoverBase()
 
-env = Ev3GridEnv(robot=robot, count_visits=True, wait_every_step=True)
+env = RileyRoverGridEnv(robot=robot, count_visits=True, wait_every_step=True)
 agent1 = DynaQPlusAgent(planning_steps=10, kappa=0.0)
 
 rand.seed(23)

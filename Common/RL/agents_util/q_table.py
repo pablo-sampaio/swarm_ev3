@@ -37,7 +37,7 @@ class TabularQ(object):
             else:
                 # remove entries for invalid actions, added during planning 
                 # Q: why not set to -inf? R: to prevent it to be drawn during planning 
-                 self.q.pop((s,a))
+                 self.q.pop((s,a), 0)
 
     def argmax(self, s, actions_in_s):
         ties = []

@@ -7,18 +7,18 @@ class AbstractHardwareBase:
     ''' Abstract class. Each subclass implements functionality that is dependent
         on the model (how it is built and what are its components).
     '''
-    def __init__(self, port_motor_l, port_motor_r, port_light_l, port_light_r, degreesPerCm):
-        self.rightMotor = LargeMotor(port_motor_r)
-        self.leftMotor = LargeMotor(port_motor_l)
+    def __init__(self, left_motor, right_motor, left_light, right_light, degreesPerCm, pid_params=(4.0, 0, 1.0)):
+        self.rightMotor = LargeMotor(right_motor)
+        self.leftMotor = LargeMotor(left_motor)
 
         self.DIST_TO_DEGREE_FACTOR = degreesPerCm   # how many degrees a wheel turns to walk 1 cm
-        self.pid_controller = PID(4.0, 0, 1.0)  # each subclass should instantiate a PID controller properly calibrated for the model
+        self.pid_controller = PID(*pid_params)  # each subclass should instantiate a PID controller properly calibrated for the model
 
-        self.lightRight = ColorSensor(port_light_r)
-        assert self.lightRight.connected, "Connect a color sensor to port " + port_light_r
+        self.lightRight = ColorSensor(right_light)
+        assert self.lightRight.connected, "Connect a color sensor to port " + right_light
         self.lightRight.mode = 'COL-REFLECT'
 
-        self.lightLeft = ColorSensor(port_light_l)
+        self.lightLeft = ColorSensor(left_light)
         if (self.lightLeft.connected):
             self.lightLeft.mode = 'COL-REFLECT'
             self.followLine = self._followline_2sensors
