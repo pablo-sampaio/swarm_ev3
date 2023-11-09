@@ -18,7 +18,7 @@ if OUTPUT_TO_FILE:
 robot = Kraz3Base()
 
 #env = Kraz3GridEnv(robot=robot, count_visits=True, wait_every_step=True)
-env = RileyRoverGridEnv(robot=robot, count_visits=True, wait_every_step=True)
+env = RileyRoverGridEnv(robot=robot, count_visits=True, wait_every_step=True, safe_distance=40.0)
 agent1 = DynaQPlusAgent(planning_steps=10, kappa=0.0)
 
 rand.seed(23)

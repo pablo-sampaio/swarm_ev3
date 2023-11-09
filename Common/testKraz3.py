@@ -207,9 +207,12 @@ def TEST8():
 
 try:
     # Tests actually performed on Kraz3
-    TEST0()
+    #TEST0()
     #TEST1()
     #TEST6()
+    for i in range(100):
+        print("Distance:", robot.getDistanceAhead())
+        sleep(0.1)
 
 except:
     print("Error. More info:")

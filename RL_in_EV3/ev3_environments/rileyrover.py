@@ -65,8 +65,9 @@ class RileyRoverGridEnv:
     An environment that interfaces to a real EV3 robot that physically executes the actions.
     This class was specially created for the RilleyRoverBase, but works with Kraz3Base too.
     '''
-    def __init__(self, robot, count_visits=False, reward_option='goal', wait_every_step=0.0):
+    def __init__(self, robot, count_visits=False, reward_option='goal', wait_every_step=0.0, safe_distance=23.0):
         self.robot = robot
+        self.min_safe_distance = safe_distance
         # Here, the 'transition' is the relative view of the agent
         # Column and row are always assumed to be 0 in the start of an episode
         # and may become negative
@@ -165,7 +166,7 @@ class RileyRoverGridEnv:
         return old_visits
 
     def _front_allowed(self):
-        return self.robot.getDistanceAhead() >= 23.0
+        return self.robot.getDistanceAhead() >= self.min_safe_distance
 
     def _check_goal(self):
         return (self.robot.readColor() == 5)  # RED
