@@ -2,7 +2,7 @@
 Give detailed instruction on how to prepare an EV3:
 
 1. Download EV3dev stretch version and flash it to a SD card
-   - Get ev3dev here: https://www.ev3dev.org/docs/getting-started/
+   - Get ev3dev here: https://www.ev3dev.org/docs/getting-started/ 
    - A flash utility: https://rufus.ie/pt_BR/
 
 2. Boot EV3 with the SD card and use a USB cable to connect EV3 to PC
@@ -22,7 +22,13 @@ https://www.ev3dev.org/docs/tutorials/connecting-to-the-internet-via-bluetooth/
 - Clicar em "Connect"
 - Espere aparecer IP
 
-5. Instalar extensão ev3dev-browser
+5. No VS Code, faça estas configurações:
+
+5.1 - Instale a extensão "ev3dev-browser" mais nova. (Essencial)
+
+5.2 - (Opcional) Para melhor editar, instale o pacote no PC com estes comandos:
+> pip install python-ev3dev
+> pip install python-ev3dev2
 
 6. Conectando no VS Code 
 - Clicar no "Explorer" (canto esquerdo, que oferece a visão dos arquivos do projeto)
@@ -55,7 +61,7 @@ https://www.ev3dev.org/docs/tutorials/connecting-to-the-internet-via-bluetooth/
    - login: "robot"
    - password: "maker"
 
-9. Excutando:
+9. Executando:
 9.1 - Executar Ctrl+F5
   - it will download the whole project to the EV3, then run the file
 
@@ -64,10 +70,6 @@ https://www.ev3dev.org/docs/tutorials/connecting-to-the-internet-via-bluetooth/
 - beforehand, remember to save the open files, then download the latest version of the project
 
 9.3 - E a partir do menu do EV3 ??
-
-10. Para melhor editar, instale o pacote no PC
-> pip install python-ev3dev
-> pip install python-ev3dev2
 
 (ver no futuro: https://pypi.org/project/ev3dev2simulator/)
 

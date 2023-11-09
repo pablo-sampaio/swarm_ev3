@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 from RL.agents import DynaQPlusAgent
-from BotHardware import RileyRoverBase
+from BotHardware import Kraz3Base
+#from ev3_environments import Kraz3GridEnv
 from ev3_environments import RileyRoverGridEnv
 
 import random as rand
@@ -9,13 +10,14 @@ import sys
 
 # works when running from Ctrl+F5 in VS Code, or running from
 # command line, but doesn't work when it is run from the brick interface
-OUTPUT_TO_FILE = True
+OUTPUT_TO_FILE = False
 if OUTPUT_TO_FILE:
     sys.stdout = open("output.txt", "w")
 
 #robot = _DummyBot()
-robot = RileyRoverBase()
+robot = Kraz3Base()
 
+#env = Kraz3GridEnv(robot=robot, count_visits=True, wait_every_step=True)
 env = RileyRoverGridEnv(robot=robot, count_visits=True, wait_every_step=True)
 agent1 = DynaQPlusAgent(planning_steps=10, kappa=0.0)
 

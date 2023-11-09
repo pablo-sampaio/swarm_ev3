@@ -1,17 +1,16 @@
 
 
-from .educator_base import _EducatorBase
+from .educator_base import _EducatorBase as EducatorBase
 
 #EducatorBot = _EducatorBase  # deprecated name
-EducatorBase = _EducatorBase
 
 
-from .enterprise_base import _EnterpriseBase
+from .enterprise_base import _EnterpriseBase as EnterpriseBase
 
 #EnterpriseBot = _EnterpriseBase  # deprecated name
-EnterpriseBase = _EnterpriseBase
 
 
-from .rileyrover_base import _RileyRoverBase
+from .rileyrover_base import _RileyRoverBase as RileyRoverBase
 
-RileyRoverBase = _RileyRoverBase
+
+from .kraz3_base import _Kraz3Base as Kraz3Base

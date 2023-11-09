@@ -41,6 +41,7 @@ class AbstractHardwareBase:
         self.rightMotor.run_forever(speed_sp=rightVelocity)
 
     def runMotorsAngle(self, wheelAngle, velocity=200, wait=True):
+        assert velocity > 0, "Parameter velocity can not be negative. Use negative wheelAngle to run backwards."
         nextLeftPos = self.leftMotor.position + wheelAngle
         nextRightPos = self.rightMotor.position + wheelAngle
         self.leftMotor.run_to_abs_pos(position_sp=nextLeftPos, speed_sp=velocity, stop_action="hold")
