@@ -3,6 +3,7 @@
 from RL.agents import DynaQPlusAgent
 from BotHardware import RileyRoverBase
 from ev3_environments import RileyRoverGridEnv
+#from ev3_environments import Kraz3GridEnv  # this is an IMPROVED version of RileyRover env, TODO: test with the RileyRover base
 
 import random as rand
 import sys
@@ -17,6 +18,7 @@ if OUTPUT_TO_FILE:
 robot = RileyRoverBase()
 
 env = RileyRoverGridEnv(robot=robot, count_visits=True, wait_every_step=True)
+#env = Kraz3GridEnv(robot=robot, count_visits=True, wait_every_step=True, reward_option='goal', initial_state=(0,0,0))
 agent1 = DynaQPlusAgent(planning_steps=10, kappa=0.0)
 
 rand.seed(23)

@@ -19,6 +19,8 @@ class _Kraz3Base(AbstractHardwareBase):
         self.leftMotor.polarity = 'inversed'
         self.rightMotor.polarity = 'inversed'
 
+        self.mediumMotor = MediumMotor('outA')
+
         self.irSensor = InfraredSensor()
         if self.irSensor.connected:
             self.irSensor.mode = 'IR-PROX'
@@ -65,3 +67,8 @@ class _Kraz3Base(AbstractHardwareBase):
         assert velocity > 0, "Use degree value below current orientation to turn counter-clockwise"
         rel_degrees = abs_degrees - self.getOrientation()
         self.turn(rel_degrees, velocity)
+
+    def celebrate(self):
+        nextPosition = self.mediumMotor.position + 720  # in degrees
+        self.mediumMotor.run_to_abs_pos(position_sp=nextPosition, speed_sp=500)
+        self.mediumMotor.wait_until_not_moving()

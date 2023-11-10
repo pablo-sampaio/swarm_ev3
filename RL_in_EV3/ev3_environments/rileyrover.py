@@ -63,7 +63,8 @@ def align_with_walls(robot):
 class RileyRoverGridEnv:
     '''
     An environment that interfaces to a real EV3 robot that physically executes the actions.
-    This class was specially created for the RilleyRoverBase, but works with Kraz3Base too.
+    This class was specially created for the RilleyRoverBase, but may work with other bases (like Kraz3Base) too.
+    The obstacles are detected using a distance (US or IR) sensor.
     '''
     def __init__(self, robot, count_visits=False, reward_option='goal', wait_every_step=0.0, safe_distance=23.0):
         self.robot = robot
@@ -82,7 +83,7 @@ class RileyRoverGridEnv:
         else:
             self.STEP_REWARD = -1.0
             self.GOAL_REWARD = 0.0
-            self.HOLE_REWARD = -1000000.0  # not used yet
+            self.HOLE_REWARD = -1000.0  # not used yet
 
         if count_visits:
             self.visits = {}
@@ -191,11 +192,13 @@ class RileyRoverGridEnv:
             time.sleep(self.wait_every_step)
        
         arrived = self._check_goal()
-        reward = self.STEP_REWARD
+        
         if arrived:
             self.robot.speaker.beep()
             reward = self.GOAL_REWARD
             self.state = None 
+        else:
+            reward = self.STEP_REWARD
 
         return new_state, reward, arrived
     

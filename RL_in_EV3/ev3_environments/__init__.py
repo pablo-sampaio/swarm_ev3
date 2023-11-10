@@ -1,7 +1,7 @@
 
 from .educator import EducatorGridEnv
 from .rileyrover import RileyRoverGridEnv
-#from .kraz3 import Kraz3GridEnv
+from .kraz3 import Kraz3GridEnv
 
 
 class _DummyBot:

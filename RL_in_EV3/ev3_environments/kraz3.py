@@ -1,20 +1,33 @@
 import time
 
+from BotHardware import Kraz3Base
 from RL.environments import Action
 
+DEFAULT_MAP_OBSTACLES = [ (+1,0), (+1,-1), (+1,-2), (0,-3), (-1,-3), (0,+1), (-1,+1), (-2,0), (-2,-1), (-2,-2) ]
+DEFAULT_MAP_GOAL = (-1,-2)
 
-class EducatorGridEnv:
+class Kraz3GridEnv:
     '''
     An environment that interfaces to a real EV3 robot that physically executes the actions.
-    The 'robot' parameter should be one of the classes from BotHarware module.
+    This class is an improved version of the RileyRoverBase, although only tested on Kraz3Base. It doesn't use the distance
+    sensor (to find obstacles) or the color sensor (to detect the terminal state), and makes the agent more inclined to
+    doing FRONT actions.
+    The limits of the map and the obstacles is represented by a list of `forbidden_positions`. The current default forbidden 
+    positions delimit a 3x2 map, extending to the front an to the left of the initial position of the robot.
+    The goal position is also a parameter. 
+    The initial state may be provided as a tuple of 3 integers (row, column, orientation).
     '''
-    def __init__(self, robot, count_visits=False, reward_option='goal', wait_every_step=0.0):
+    def __init__(self, robot, count_visits=False, reward_option='goal', wait_every_step=0.0,
+                 initial_state=(0,0,0), forbidden_positions=DEFAULT_MAP_OBSTACLES, goal_position=DEFAULT_MAP_GOAL):
         self.robot = robot
+        
         # Here, the 'transition' is the relative view of the agent
         # Column and row are always assumed to be 0 in the start of an episode
         # and may become negative
-        self.initial_state = (0, 0, 0)  # row, column, orientation angle
+        assert initial_state[2] in [0, 90, 180, 270]
+        self.initial_state = tuple(initial_state)
         self.state = None
+        
         assert reward_option in ['goal', 'step_cost']
         self.reward_option = reward_option
         if reward_option == 'goal':
@@ -32,15 +45,24 @@ class EducatorGridEnv:
             self.visits = None
         self.count_visits = count_visits
         
-        self.actions = list(Action)
+        self.forbidden_positions = list(forbidden_positions)
+        self.goal_position = tuple(goal_position)  # must be tuple, to compare with the state tuple
+
         self.actions_no_front = list(Action)
         self.actions_no_front.remove(Action.FRONT)
+        
+        # a list with the multiple copies of Action.FRONT
+        # this is basically a HACK, to increase the odds of the agent choosing this action
+        self.actions = list(Action)
+        self.actions.append(Action.FRONT)
+        self.actions.append(Action.FRONT)
+
         self.wait_every_step = wait_every_step
 
         self.step = self.apply_action # another name for the function (similar to the name used in gym)
 
     def all_actions(self):
-        return self.actions
+        return list(Action)
 
     def curr_actions(self):
         assert self.state is not None, "Environment must be reset"
@@ -61,14 +83,14 @@ class EducatorGridEnv:
         if self.wait_every_step:
             time.sleep(self.wait_every_step)
         
-        self.robot.resetOrientation()
         self.state = self.initial_state 
         if self.visits is not None:
             count = self.visits.get(self.state[0:2], 0)
             self.visits[self.state[0:2]] = count + 1
+        self.epi_steps = 0
         return self.state
 
-    def _internal_apply_action(self, obs, action):
+    def _internal_apply_action(self, obs, action, apply=True):
         row, col, orientation = obs
 
         if action == Action.FRONT:
@@ -82,18 +104,24 @@ class EducatorGridEnv:
                 col -= 1
             else:
                 raise Exception("Invalid direction")
-            self.robot.runMotorsDistance(21.8, 150) # anda 21.8 cm
+            
+            if apply:
+                self.robot.runMotorsDistance(25.0, 150) # anda 25.0 cm
+
         elif action == Action.TURN_CW:
             orientation = (orientation+90) % 360
-            self.robot.turnToOrientation(self.robot.getOrientation() + 90)
-            # below, it is shown an alternative to the line above that went bad in tests (similar calculation would be used for CW):
-            # rounded_orientation = 90.0 * ((self.robot.getOrientation() + 15.0) // 90)
-            # self.robot.turnToOrientation(rounded_orientation + 90)
+            if apply:
+                self.robot.turn(90)
         elif action == Action.TURN_COUNTER_CW:
             orientation = (orientation-90) % 360
-            self.robot.turnToOrientation(self.robot.getOrientation() - 90)
+            if apply:
+                self.robot.turn(-90)
         else:
             raise Exception("Invalid action")
+        
+        if apply:
+            self.epi_steps += 1
+
         return (row, col, orientation)
 
     def reset_visits(self):
@@ -103,10 +131,15 @@ class EducatorGridEnv:
         return old_visits
 
     def _front_allowed(self):
-        return self.robot.getDistanceAhead() >= 22.0
+        next_state = self._internal_apply_action(self.state, Action.FRONT, apply=False)
+        next_pos = next_state[0:2]
+        return next_pos not in self.forbidden_positions
 
     def _check_goal(self):
-        return (self.robot.readColor() == 5)  # RED
+        arrived = (self.state[0:2] == self.goal_position)
+        if arrived and isinstance(self.robot, Kraz3Base):
+            self.robot.celebrate()
+        return arrived
 
     def apply_action(self, action):
         assert self.state is not None, "Environment must be reset"
@@ -128,7 +161,7 @@ class EducatorGridEnv:
             time.sleep(self.wait_every_step)
        
         arrived = self._check_goal()
-        
+
         if arrived:
             self.robot.speaker.beep()
             reward = self.GOAL_REWARD
