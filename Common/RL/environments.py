@@ -150,7 +150,7 @@ class SimulatedEnv:
         else:
             # invalid moves are not accepted
             #raise Exception(f"Action {action} is not valid in state {self.state}!")
-            raise Exception("Action " + action + " is not valid in state" + self.state + "!")
+            raise Exception("Action " + action + " is not valid in state " + self.state + "!")
         
         is_terminal = False
         if self.map[new_state[0]][new_state[1]] == 2:  # goal

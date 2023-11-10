@@ -9,8 +9,8 @@ import random as rand
 import sys
 
 # works when running from Ctrl+F5 in VS Code, or running from
-# command line, but doesn't work when it is run from the brick interface
-OUTPUT_TO_FILE = True
+# command line, but doesn't work when run from the brick interface
+OUTPUT_TO_FILE = False
 if OUTPUT_TO_FILE:
     sys.stdout = open("output.txt", "w")
 
@@ -19,10 +19,10 @@ robot = RileyRoverBase()
 
 env = RileyRoverGridEnv(robot=robot, count_visits=True, wait_every_step=True)
 #env = Kraz3GridEnv(robot=robot, count_visits=True, wait_every_step=True, reward_option='goal', initial_state=(0,0,0))
-agent1 = DynaQPlusAgent(planning_steps=10, kappa=0.0)
+agent1 = DynaQPlusAgent(planning_steps=20, kappa=0.0)
 
 rand.seed(23)
-NUM_EPISODES = 4
+NUM_EPISODES = 20
 
 robot.speaker.beep()
 agent1.start_train(env)
