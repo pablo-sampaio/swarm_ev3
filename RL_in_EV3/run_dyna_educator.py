@@ -2,7 +2,7 @@
 
 from RL.agents import DynaQPlusAgent
 from BotHardware import EducatorBase
-from ev3_environments import EducatorGridEnv
+from ev3_environments import EducatorGridEnv, _SimulatedBot
 
 import random as rand
 import sys
@@ -13,7 +13,7 @@ OUTPUT_TO_FILE = True
 if OUTPUT_TO_FILE:
     sys.stdout = open("output.txt", "w")
 
-#robot = _DummyBot()
+#robot = _SimulatedBot()
 robot = EducatorBase()
 
 env = EducatorGridEnv(robot=robot, count_visits=True, wait_every_step=True)

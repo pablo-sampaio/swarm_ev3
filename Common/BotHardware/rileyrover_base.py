@@ -61,3 +61,10 @@ class _RileyRoverBase(AbstractHardwareBase):
         assert velocity > 0, "Use degree value below current orientation to turn counter-clockwise"
         rel_degrees = abs_degrees - self.getOrientation()
         self.turn(rel_degrees, velocity)
+
+    def celebrate(self):
+        self.speaker.beep()
+        sleep(0.05)
+        self.speaker.beep()
+        sleep(0.05)
+        self.speaker.beep()

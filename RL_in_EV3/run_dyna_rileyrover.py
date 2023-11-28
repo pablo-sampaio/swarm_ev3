@@ -2,7 +2,7 @@
 
 from RL.agents import DynaQPlusAgent
 from BotHardware import RileyRoverBase
-from ev3_environments import RileyRoverGridEnv
+from ev3_environments import RileyRoverGridEnv, _SimulatedBot
 #from ev3_environments import Kraz3GridEnv  # this is an IMPROVED version of RileyRover env, TODO: test with the RileyRover base
 
 import random as rand
@@ -14,7 +14,7 @@ OUTPUT_TO_FILE = False
 if OUTPUT_TO_FILE:
     sys.stdout = open("output.txt", "w")
 
-#robot = _DummyBot()
+#robot = _SimulatedBot()
 robot = RileyRoverBase()
 
 env = RileyRoverGridEnv(robot=robot, count_visits=True, wait_every_step=True)

@@ -4,7 +4,7 @@ from .rileyrover import RileyRoverGridEnv
 from .kraz3 import Kraz3GridEnv
 
 
-class _DummyBot:
+class _SimulatedBot:
     ''' Class created only to test the Ev3GridEnv
     '''
     def __init__(self):
@@ -40,4 +40,10 @@ class _DummyBot:
 
     def getDistanceAhead(self):
         return 25.0
+    
+    def turn(self, degrees, velocity=50):
+        self.orientation += degrees
+    
+    def celebrate(self):
+        "Yey!"
 

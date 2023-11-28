@@ -20,6 +20,9 @@ class Action(Enum):
     TURN_CW = 1
     TURN_COUNTER_CW = 2
     
+    def is_reversible(action):
+        return action == Action.TURN_CW or action == Action.TURN_COUNTER_CW
+
     def reverse(action):
         if action == Action.TURN_COUNTER_CW:
             return Action.TURN_CW

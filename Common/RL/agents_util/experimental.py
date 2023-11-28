@@ -235,7 +235,7 @@ class DynaQPlusAgentExperimental(object):
                 target_q = r
             else:
                 # the model_valid_actions was created mostly because of its use here, after many buggy trials
-                # simpler alternatives: (1) make 'model' with key 's', pointing do another dict with key 'action;
+                # simpler alternatives: (1) make 'model' with key 's', pointing do another dict with key 'action';
                 # (2) simply allow all actions, making inefective the actions not available
                 target_q = r + self.gamma * self.qtable.max(next_s, self.model_valid_actions[next_s]) 
             

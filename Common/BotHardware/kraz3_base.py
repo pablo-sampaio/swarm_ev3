@@ -69,6 +69,7 @@ class _Kraz3Base(AbstractHardwareBase):
         self.turn(rel_degrees, velocity)
 
     def celebrate(self):
+        self.speaker.beep()
         nextPosition = self.mediumMotor.position + 720  # in degrees
         self.mediumMotor.run_to_abs_pos(position_sp=nextPosition, speed_sp=500)
         self.mediumMotor.wait_until_not_moving()

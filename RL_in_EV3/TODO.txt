@@ -7,7 +7,7 @@
 
 LONGO PRAZO
 
-( ) Seguidor de linha "envenenado"
+( ) Seguidor de linha melhorado
     * v1: ajustar pesos do PID (vels fixas?) com otimizador
     * v2: usar RL
     *     historico de observacoes

@@ -106,16 +106,16 @@ class Kraz3GridEnv:
                 raise Exception("Invalid direction")
             
             if apply:
-                self.robot.runMotorsDistance(25.0, 150) # anda 25.0 cm
+                self.robot.runMotorsDistance(25.0, 200) # anda 25.0 cm
 
         elif action == Action.TURN_CW:
             orientation = (orientation+90) % 360
             if apply:
-                self.robot.turn(90)
+                self.robot.turn(90, velocity=150)
         elif action == Action.TURN_COUNTER_CW:
             orientation = (orientation-90) % 360
             if apply:
-                self.robot.turn(-90)
+                self.robot.turn(-90, velocity=150)
         else:
             raise Exception("Invalid action")
         
@@ -133,7 +133,7 @@ class Kraz3GridEnv:
     def _front_allowed(self):
         next_state = self._internal_apply_action(self.state, Action.FRONT, apply=False)
         next_pos = next_state[0:2]
-        return next_pos not in self.forbidden_positions
+        return (next_pos not in self.forbidden_positions)
 
     def _check_goal(self):
         arrived = (self.state[0:2] == self.goal_position)
@@ -163,7 +163,7 @@ class Kraz3GridEnv:
         arrived = self._check_goal()
 
         if arrived:
-            self.robot.speaker.beep()
+            self.robot.celebrate()
             reward = self.GOAL_REWARD
             self.state = None 
         else:
