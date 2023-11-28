@@ -114,7 +114,7 @@ class DynaQPlusAgentExtended(object):
         # update model
         self.update_model(self.state, action, reward, new_state, is_terminal)
         if self.reverse_actions and (not is_terminal):
-            if action.is_reversible(action):
+            if Action.is_reversible(action):
                 self.update_model(new_state, action.reverse(), self.env.STEP_REWARD, self.state, False)
             #elif action == Action.FRONT:              
 

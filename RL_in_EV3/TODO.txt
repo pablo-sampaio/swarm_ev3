@@ -1,5 +1,4 @@
 
-( ) Testar rodar script com o novo workspace / apagar antigo
 ( ) Mover pasta basica de RL para nível superior
 ( ) Mover o EV3 env para a pasta específica de RL_in_EV3 ?
 ( ) Criar workspace proprio para os scripts da pasta Common (testes gerais)

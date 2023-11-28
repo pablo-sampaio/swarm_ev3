@@ -13,7 +13,7 @@ Give detailed instruction on how to prepare an EV3:
 
 4.1 (Mostly, first-time only) Bluetooth:
 https://www.ev3dev.org/docs/tutorials/connecting-to-the-internet-via-bluetooth/
-- In step 7, set "Connect automatically"
+- In step 7, check option "Connect automatically"
 
 4.2 With a USB cable
 - Wireless and Networks

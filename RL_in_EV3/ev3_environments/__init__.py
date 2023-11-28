@@ -17,7 +17,8 @@ class _SimulatedBot:
         class _Sound:
             def beep(self):
                 print("Beeep!")
-                pass
+            def speak(self, text):
+                print("Speaking:", text)
         self.brickButton = _Button(self)
         self.speaker = _Sound()
         self.count = 0

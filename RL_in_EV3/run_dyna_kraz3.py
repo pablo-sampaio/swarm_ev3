@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import random as rand
 import sys
-import os
 import time
 
 from ev3dev.ev3 import PowerSupply
@@ -17,8 +16,10 @@ from ev3_environments import Kraz3GridEnv, _SimulatedBot
 
 power = PowerSupply()
 
-def epsilon_decay(train_step):
-    return max((50 - train_step) / 50.0, 0.1)
+#MIN_EPSILON  =  0.0
+#DECAY_PERIOD = 15.0
+#def epsilon_decay(train_step):
+#    return max((DECAY_PERIOD - train_step) / DECAY_PERIOD, MIN_EPSILON)
 
 
 if __name__ == "__main__":
@@ -33,10 +34,10 @@ if __name__ == "__main__":
 
     env = Kraz3GridEnv(robot=robot, count_visits=True, wait_every_step=True, reward_option='goal', initial_state=(0,0,0))
     #agent1 = DynaQPlusAgentExtended(alpha=0.2, epsilon=1.0, planning_steps=15, kappa=0.0, epsilon_decay_fn=epsilon_decay)
-    agent1 = DynaQPlusAgentExperimental(planning_steps=15, kappa=0.0, model_option='all', reverse_actions=True, initial_policy='state-action-count')
+    agent1 = DynaQPlusAgentExperimental(epsilon=0.05, planning_steps=15, kappa=0.0, model_option='transition+', reverse_actions=True, initial_policy='state-action-count')
 
     rand.seed(28)
-    NUM_EPISODES = 5
+    NUM_EPISODES = 6
 
     robot.speaker.beep()
     robot.celebrate()
@@ -50,14 +51,14 @@ if __name__ == "__main__":
         print("Episode #", epi)
 
         voltage = power.measured_voltage / 10e5  # voltage in V
-        if voltage < 7.5:
+        if voltage < 7.4:
             robot.speaker.beep()
             print("Low battery! Please recharge the battery!")
             robot.speaker.speak("Low battery! Please recharge the battery!")
             time.sleep(3)
             #robot.speaker.speak("Shutting down! Bye, bye...")
             #time.sleep(3)
-            robot.speaker.beep()
+            #robot.speaker.beep()
             #os.system("shutdown -h now")
         
         while not terminal:
