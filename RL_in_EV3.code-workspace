@@ -1,10 +1,13 @@
 {
 	"folders": [
 		{
-			"path": "./RL_in_EV3"
+			"path": "./Common"
 		},
 		{
-			"path": "./Common"
+			"path": "./Common_RL"
+		},
+		{
+			"path": "./RL_in_EV3"
 		}
 	],
 	"settings": {

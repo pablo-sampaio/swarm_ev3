@@ -4,7 +4,7 @@
 This folder contains experiments with reinforcement learning algorithms with some experimental modifications.
 The environment is a simple grid-based maze. 
 
-The classes for the algorithms and the environment are in folder `Common\RL`. But here we provide some description:
+The classes for the algorithms and the environment are in folder `Common_RL/RL`. But here we provide some description:
 
 - class `SimulatedEnv` implements a simple maze, with the standard size of 5 rows x 7 columns. Two reward systems are offered:
   - 'goal': the agent receives +1 when reaches the goal cell, and 0 in every other step

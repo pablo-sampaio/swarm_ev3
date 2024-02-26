@@ -3,6 +3,9 @@ from RfidReader import RfidSerialThread
 from LinesNavigation import *
 from time import sleep
 
+## THIS IS A DRAFT (NOT TESTED) IMPLEMENTATION OF THE ECEP ALGORITHM ##
+
+
 ##################################
 # GLOBAL VARIABLES AND CONSTANTS #
 

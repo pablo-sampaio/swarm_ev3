@@ -1,8 +1,14 @@
 
 import random as rand
 
+# para rodar em PC, descomente as linhas abaixo
+import sys
+from os import path
+sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) + "/Common_RL" )
+sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) + "/Common" )
+
 from RL.agents import DynaQPlusAgentExperimental
-from RL.environments import Ev3GridEnv, _DummyBot
+from ev3_environments import EducatorGridEnv, _SimulatedBot
 
 def print_visits(visits):
     for row in visits:
@@ -13,8 +19,8 @@ def print_visits(visits):
 
 rand.seed(21)
 
-robot=_DummyBot()
-env = Ev3GridEnv(robot, count_visits=True, reward_option='step_cost', wait_every_step=0)
+robot  = _SimulatedBot()
+env    = EducatorGridEnv(robot, count_visits=True, reward_option='step_cost', wait_every_step=0)
 agent1 = DynaQPlusAgentExperimental(planning_steps=5, kappa=0.0, model_option='transition+', default_q=1.0)
 #agent1 = DynaQPlusAgentExperimental(planning_steps=5, kappa=0.0, model_option='optimistic_transition+')
 

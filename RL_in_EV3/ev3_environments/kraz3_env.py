@@ -6,7 +6,7 @@ from RL.environments import Action
 # mapa 2x3
 #DEFAULT_MAP_OBSTACLES = [ (+1,0), (+1,-1), (+1,-2), (0,-3), (-1,-3), (0,+1), (-1,+1), (-2,0), (-2,-1), (-2,-2) ]
 
-# mapa 2x4
+# map with 2x4 dimensions
 DEFAULT_MAP_OBSTACLES = [ (+1,+2), (+1,+1), (+1,0), (+1,-1), (+1,-2), (+1,-3),
                           ( 0,+2),                                    ( 0,-3), 
                           (-1,+2),                                    (-1,-3), 
@@ -17,12 +17,12 @@ DEFAULT_MAP_GOAL = (-1,-2)
 class Kraz3GridEnv:
     '''
     An environment that interfaces to a real EV3 robot that physically executes the actions.
-    This class is an improved version of the RileyRoverBase, although only tested on Kraz3Base. It doesn't use the distance
-    sensor (to find obstacles) or the color sensor (to detect the terminal state), and makes the agent more inclined to
-    doing FRONT actions.
-    The limits of the map and the obstacles is represented by a list of `forbidden_positions`. The current default forbidden 
-    positions delimit a 3x2 map, extending to the front an to the left of the initial position of the robot.
-    The goal position is also a parameter. 
+    This class was created for the Kraz3Base, but probably works with RileyRover and other bases. 
+    It doesn't use the distance sensor (to find obstacles) or the color sensor (to detect the terminal state), and makes the 
+    agent more inclined to doing FRONT actions.
+    The limits of the map are represented by a list of `forbidden_positions`. The goal position is also a parameter. 
+    The current default forbidden positions delimit a 2x4 map, extending to the front an to the left of the initial position
+    of the robot, with the goal position placed ahead and to the left of the initial position.
     The initial state may be provided as a tuple of 3 integers (row, column, orientation).
     '''
     def __init__(self, robot, count_visits=False, reward_option='goal', wait_every_step=0.0,
@@ -60,7 +60,7 @@ class Kraz3GridEnv:
         self.actions_no_front.remove(Action.FRONT)
         
         # a list with the multiple copies of Action.FRONT
-        # this is basically a HACK, to increase the odds of the agent choosing this action
+        # this is basically a 'hacky' way to increase the odds of the agent choosing this action
         self.actions = list(Action)
         self.actions.append(Action.FRONT)
         self.actions.append(Action.FRONT)

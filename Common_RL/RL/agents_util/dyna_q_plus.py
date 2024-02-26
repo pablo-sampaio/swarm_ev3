@@ -19,6 +19,15 @@ except AttributeError:
 class DynaQPlusAgent(object):
     def __init__(self, epsilon=0.1, gamma=0.98, alpha=0.1, planning_steps=5, kappa=0.00001, 
             default_q=0.0):
+        '''
+        Parameters:
+        - epsilon: exploration rate, as probability of choosing a random action; if epsilon_decay_fn is not None, then this is the initial epsilon.
+        - gamma: discount factor
+        - alpha: learning rate
+        - planning_steps: number of planning steps (for indirect RL)
+        - kappa: scaling factor for the bonus reward in indirect RL (Dyna-Q+)
+        - default_q: initial value for Q(s,a) for all (s,a) pairs
+        '''
         self.epsilon = epsilon
         self.gamma = gamma
         self.alpha = alpha

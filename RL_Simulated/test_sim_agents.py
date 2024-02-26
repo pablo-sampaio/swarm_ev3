@@ -2,7 +2,7 @@
 import random as rand
 
 from RL.agents import DynaQPlusAgent, DynaQPlusAgentExperimental, LRTAStarAgent
-from RL.environments import SimulatedEnv, Ev3GridEnv
+from RL.environments import SimulatedEnv
 
 def print_visits(visits):
     for row in visits:

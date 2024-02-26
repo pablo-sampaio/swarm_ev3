@@ -28,8 +28,25 @@ def distance_to_goal(state, goal):
 
 class DynaQPlusAgentExperimental(object):
     def __init__(self, epsilon=0.1, gamma=0.98, alpha=0.1, planning_steps=5, kappa=0.00001, 
-            model_option='transition', reverse_actions=False, initial_policy='e-greedy', default_q=0.0):
-        self.epsilon = epsilon
+            model_option='transition', reverse_actions=False, initial_policy='e-greedy', default_q=0.0, epsilon_decay_fn=None):
+        '''
+        Parameters:
+        - epsilon: exploration rate, as probability of choosing a random action; if epsilon_decay_fn is not None, then this is the initial epsilon.
+        - gamma: discount factor
+        - alpha: learning rate
+        - planning_steps: number of planning steps (for indirect RL)
+        - model_option: indicates what information is used in the model; options are: 
+           -  'transition' only the actual transitions (s,a,r,s') performed by the agent are added.
+           -  'transition+' after an experienced transition (s,a,r,s'), also adds the transitions for all other actions
+               from state s, assuming that s'=s and r=0.
+           -  'optimistic_transition+': same as 'transition+', but assumes +1 reward for transitions not yet experienced.
+           -  'all': the whole state x action space is added to the model from the start of the trainning.
+        - kappa: scaling factor for the bonus reward in indirect RL (Dyna-Q+)
+        - default_q: initial value for Q(s,a) for all (s,a) pairs
+        - reverse_actions: if True, then the agent will learn the reverse actions in its internal model (e.g., if turns CW, it will also learn the reverse transition with CCW)
+        - epsilon_decay_fn: function that receives the number of steps and returns the proportion of epsilon to be used in that step; if None, then epsilon is constant
+        '''
+        self.initial_epsilon = epsilon
         self.gamma = gamma
         self.alpha = alpha
         self.planning_steps = planning_steps
@@ -45,6 +62,7 @@ class DynaQPlusAgentExperimental(object):
         if isinstance(default_q, str):
             assert default_q in ['goal_dist', 'tentative_goal_dist']
         self.default_q = default_q
+        self.epsilon_decay_fn = epsilon_decay_fn        
 
     def choose_action(self, s):
         return self.qtable.argmax(s)
@@ -126,7 +144,12 @@ class DynaQPlusAgentExperimental(object):
         return self.state
 
     def e_greedy_policy(self, state, actions_in_state):
-        if rand.random() < self.epsilon:
+        if self.epsilon_decay_fn is not None:
+            epsilon = self.epsilon_decay_fn(self.train_step) * self.initial_epsilon
+        else:
+            epsilon = self.initial_epsilon
+
+        if rand.random() < epsilon:
             action = rand.choice(actions_in_state)
         else:
             action, _ = self.qtable.argmax(state, actions_in_state)
