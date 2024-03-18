@@ -38,7 +38,7 @@ ao bloco inteligente (*intelligent brick*): `more /etc/ev3dev-release`.
 
 1. No VS Code, faça estas configurações:
 
-   - Instale a extensão "ev3dev-browser" mais nova. (Essencial).
+   - Instale a extensão "ev3dev-browser" mais nova. 
    - (Opcional) Para facilitar o desenvolvimento, instale no PC os módulos de Python com estes comandos:
 
       ```
@@ -46,12 +46,12 @@ ao bloco inteligente (*intelligent brick*): `more /etc/ev3dev-release`.
       > pip install python-ev3dev2
       ```
 
-1. Conectando no VS Code 
-   - Clicar no "Explorer" (canto esquerdo, que oferece a visão dos arquivos do projeto)
+1. Conectando pelo VS Code 
+   - Clicar no "Explorer" (botão no canto esquerdo, que abre uma visão dos arquivos do projeto)
    - Desça até o o painel com o nome da extensão "EV3DEV DEVICE BROWSER"
    - Escolha "Click here to connect to a device"
-   - Escolher na lista, geralmente o nome é "ev3dev". Se a conexão for por Bluetooth, você verá um comentário ao lado indicando.
-   - Ao lado do nome "ev3dev" vai aparecer uma bolinha verde
+   - Escolha seu dispositivo EV3 na lista. Geralmente o nome é "ev3dev". Se a conexão for por Bluetooth, você verá um comentário ao lado indicando.
+   - Uma bolinha verde vai aparecer ao lado do nome "ev3dev", no "EV3DEV DEVICE BROWSER"
 
    - **Se der certo**:
       - Você pode expandir o nome "eve3dev" e ver arquivos e informações

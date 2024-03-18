@@ -36,36 +36,37 @@ to the intelligent brick: `more /etc/ev3dev-release`.
       - Await the IP address to appear
       - If anything goes wrong: try again; if nothing works, restart everything and try again.
 
-1. No VS Code, faça estas configurações:
+1. In VS Code, adjust these settings:
 
-   - Instale a extensão "ev3dev-browser" mais nova. (Essencial).
-   - (Opcional) Para melhor editar, instale o pacote no PC com estes comandos:
+   - Install the newest "ev3dev-browser" extension.
+   - (Optional) For better editing, install the package on your PC with the commands below.
 
       ```
       > pip install python-ev3dev
       > pip install python-ev3dev2
       ```
 
-1. Conectando no VS Code 
-   - Clicar no "Explorer" (canto esquerdo, que oferece a visão dos arquivos do projeto)
-   - Desça até o o painel com o nome da extensão "EV3DEV DEVICE BROWSER"
-   - Escolha "Click here to connect to a device"
-   - Escolher na lista, geralmente o nome é "ev3dev". Se a conexão for por bluetooth, você verá um comentário ao lado indicando.
-   - Ao lado do nome "ev3dev" vai aparecer uma bolinha verde
+1. Connecting through VS Code
+   - Click on the "Explorer" (button on the left side, which opens a view of the project files)
+   - Scroll down to the panel named "EV3DEV DEVICE BROWSER"
+   - Choose "Click here to connect to a device"
+   - Select your EV3 device from the list. Usually the name is "ev3dev". If the connection is via Bluetooth, you will see a comment next to it indicating so.
+   - A green dot will appear next to the name "ev3dev", in the "EV3DEV DEVICE BROWSER"
 
-   - **Se der certo**:
-      - Você pode expandir o nome "eve3dev" e ver arquivos e informações
-      - Clique com o botão direito e escolha "Open SSH Terminal"
-      - Você pode usar comandos do linux
+   - **If successful**:
+      - You can expand the name "ev3dev" and see files and information
+      - Right-click and choose "Open SSH Terminal"
+      - You can use Linux commands
 
-   - **Se *não* der certo**:
-      - Tente reiniciar o windows
-      - Confira se não desconectou, por alguma falha no cabo (sumiu o IP no topo da tela do EV3)
+   - **If *not* successful**:
+      - Try restarting Windows
+      - Check if it disconnected due to a cable fault (the IP disappeared at the top of the EV3 screen)
 
-1. (**First-time only**) Para configurar a referência entre as pastas, faça isso apenas da 1a vez:
+
+1. (**First-time only**) To configure the links to folders, do this only the 1st time:
    - In "EV3DEV DEVICE BROWSER" click on the small button with (pop-up) caption "Send workspace to device" (top right of the panel)
      - this may be rather slow with Bluetooth connection
-   - Right-click on "ev3dev" then choose "Open SSH Terminal"
+   - Right-click on "ev3dev", then choose "Open SSH Terminal"
    - Type
       ```
       > cd ~
@@ -81,7 +82,7 @@ to the intelligent brick: `more /etc/ev3dev-release`.
 
 ## TO DOWNLOAD THE WHOLE PROJECT TO EV3
 
-1. No painel EV3DEV DEVICE BROWSER do lado esquerdo, ao lado do nome "ev3dev", clique no botão "Send workspace to device"
+1. In the EV3DEV DEVICE BROWSER panel on the left, next to the name "ev3dev", click the "Send workspace to device" button
    - The button to the left of the name "ev3dev" must be green -- the device must be connected!
 
 2. Remember to do this whenever you change anything, if you run the files using options 2 and 3 (of the next section).
@@ -90,7 +91,7 @@ to the intelligent brick: `more /etc/ev3dev-release`.
 Use this, if you haven't changed since last donwload to EV3 or 
 after changes made to "RL_in_EV3" folder only.
 
-1. Before anything, remember to save the open files.
+1. Before anything else, remember to save the open files.
 
 1. Hit Ctrl+F5 (on the desired open file in VS Code)
    - It will automatically download the whole project to the EV3, then run the file
@@ -134,4 +135,4 @@ ou
    ```
    sudo shutdown -h now
    ```
-(Remember the user/password: 'robot/maker')
+(Remember the user/password: `robot/maker`)
